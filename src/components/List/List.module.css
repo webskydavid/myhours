@@ -1,0 +1,12 @@
+.root {
+}
+
+.list {
+  display: grid;
+  grid-auto-flow: row;
+}
+
+.event {
+  display: grid;
+  grid-auto-flow: column;
+}
