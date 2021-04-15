@@ -1,35 +1,51 @@
-import {
-  addMonths,
-  getDate,
-  getDaysInMonth,
-  intervalToDuration,
-  subMonths,
-} from 'date-fns';
+import { addMonths, intervalToDuration, subMonths } from 'date-fns';
 import format from 'date-fns/format';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { FC, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useEventList } from '../../providers/EventListProvider';
+import EventForm from '../EventForm/EventForm';
+import SelectCalendar from '../SelectCalendar/SelectCalendar';
 import { useApp } from './../../providers/AppProvider';
 import classes from './List.module.css';
 
 const List: FC = () => {
   const { state: appState } = useApp();
   const { state: eventListState, actions: eventListActions } = useEventList();
-  const { loading, items, currentDate } = eventListState;
-  const { insert, remove, list, nextMonth, prevMonth } = eventListActions;
+  const {
+    loading,
+    items,
+    calendarList,
+    currentDate,
+    calendarId,
+  } = eventListState;
+  const {
+    insert,
+    remove,
+    list,
+    calendarList: calendar,
+    nextMonth,
+    prevMonth,
+  } = eventListActions;
 
   const history = useHistory();
 
-  if (!appState.isLoggedIn) {
-    history.push('/login');
-  }
+  useEffect(() => {
+    if (!appState.isLoggedIn) {
+      history.push('/login');
+    }
+  }, [appState.isLoggedIn, history]);
 
   useEffect(() => {
+    console.log(calendarId);
+
     if (appState.isLoggedIn) {
-      list();
+      if (calendarId !== '') {
+        list();
+      } else {
+        calendar();
+      }
     }
-  }, [list, appState.isLoggedIn]);
+  }, [list, calendar, appState.isLoggedIn, calendarId]);
 
   const handleInsert = (values: any) => {
     insert(values.command);
@@ -49,6 +65,7 @@ const List: FC = () => {
 
   return (
     <div>
+      <SelectCalendar />
       <div className={classes.switcher}>
         <button onClick={setPrevMonth}>
           {format(subMonths(currentDate, 1), 'MMMM')}
@@ -61,7 +78,7 @@ const List: FC = () => {
       {!loading ? (
         <>
           <div className={classes.list}>
-            {items.length
+            {!!items.length
               ? items.map((event: any) => {
                   const start = new Date(event.start.dateTime);
                   const end = new Date(event.end.dateTime);
@@ -91,48 +108,11 @@ const List: FC = () => {
               : 'No hours!'}
           </div>
           <div className={classes.terminalContainer}>
-            <Formik
-              initialValues={{ command: getDate(currentDate) + ' ' }}
-              onSubmit={handleInsert}
-            >
-              <Form>
-                <div className={classes.terminal}>
-                  <Field
-                    autocomplete='off'
-                    name='command'
-                    validate={(command: string) => {
-                      let error;
-                      const maxDay = new Date(
-                        currentDate.getFullYear(),
-                        currentDate.getMonth() + 1,
-                        0
-                      ).getDate();
-
-                      const regex = new RegExp(
-                        /^[0-9]{1,2} [0-9]{2,4} [0-9]{2,4}$/g
-                      );
-
-                      if (!regex.test(command)) {
-                        error =
-                          'Invalid value provided "14 1300 1400" <day starthour endhour>!';
-                      } else {
-                        const [day, start, end] = command.split(' ');
-                        const dayNumber = Number.parseInt(day);
-
-                        if (dayNumber > maxDay || dayNumber < 1) {
-                          error = 'Invalid day value!';
-                        }
-                      }
-                      return error;
-                    }}
-                  />
-                  <button type='submit'>SEND</button>
-                </div>
-                <ErrorMessage name='command'>
-                  {(msg) => <div className={classes.error}>{msg}</div>}
-                </ErrorMessage>
-              </Form>
-            </Formik>
+            <EventForm
+              classes={classes}
+              currentDate={currentDate}
+              handleInsert={handleInsert}
+            />
           </div>
         </>
       ) : (

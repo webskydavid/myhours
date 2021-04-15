@@ -5,10 +5,13 @@ export interface ContextType {
   state: IState;
   actions: {
     list: () => void;
+    calendarList: () => void;
     remove: (eventId: string) => void;
     insert: (command: string) => void;
+    insertCalendar: () => void;
     nextMonth: () => void;
     prevMonth: () => void;
+    setCalendarId: (id: string) => void;
   };
 }
 

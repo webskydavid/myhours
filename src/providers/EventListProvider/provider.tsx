@@ -1,9 +1,16 @@
-import { FC, useReducer, useMemo, useCallback, Reducer } from 'react';
+import {
+  FC,
+  useReducer,
+  useMemo,
+  useCallback,
+  Reducer,
+  useState,
+  useEffect,
+} from 'react';
 import { initialState, IReducer, IState, reducer } from './reducer';
 import { Context } from './context';
 import { useApp } from '../AppProvider';
-
-const CALENDAR_ID = 'pvvdnnjjhf3tgmlq12uageualg@group.calendar.google.com';
+import { intervalToDuration } from 'date-fns';
 
 const getFilter = (currentDate: any) => {
   const date = {
@@ -41,19 +48,32 @@ const getFilter = (currentDate: any) => {
 
 const EventListProvider: FC = ({ children }) => {
   const { state: appState } = useApp();
-  const [state, dispatch] = useReducer<Reducer<IState, IReducer>>(reducer, {
-    ...initialState,
-    month: initialState.currentDate.getMonth(),
-  });
+  const [state, dispatch] = useReducer<Reducer<IState, IReducer>>(
+    reducer,
+    initialState
+  );
+
+  const init = useCallback(() => {
+    const currentDate = new Date();
+    dispatch({
+      type: 'INIT',
+      payload: {
+        currentDate: new Date(),
+        month: currentDate.getMonth(),
+      },
+    });
+  }, []);
 
   const list = useCallback(async () => {
     dispatch({ type: 'LOADING' });
     try {
+      console.log(state.calendarId);
+
       const filter = getFilter(state.currentDate);
       const orderBy = '&orderBy=startTime';
       const singleEvents = '&singleEvents=true';
       const query = `${filter}${singleEvents}${orderBy}`;
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events${query}`;
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${state.calendarId}/events${query}`;
       const res: Response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${appState.token}`,
@@ -68,13 +88,36 @@ const EventListProvider: FC = ({ children }) => {
     } catch (e) {
       dispatch({ type: 'ERROR', payload: e });
     }
-  }, [state.currentDate, appState.token]);
+  }, [state.currentDate, state.calendarId, appState.token]);
+
+  const calendarList = useCallback(async () => {
+    dispatch({ type: 'LOADING_CALENDAR_LIST' });
+    try {
+      const url = `https://www.googleapis.com/calendar/v3/users/me/calendarList`;
+      const res: Response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${appState.token}`,
+        },
+      });
+      if (res.status === 200) {
+        const { items } = await res.json();
+        const filtered = items.filter((item: any) => {
+          return item.summary.includes('__HOURS__');
+        });
+        dispatch({ type: 'RESPONSE_CALENDAR', payload: filtered });
+      } else {
+        dispatch({ type: 'ERROR', payload: 'Error!' });
+      }
+    } catch (e) {
+      dispatch({ type: 'ERROR', payload: e });
+    }
+  }, [appState.token]);
 
   const remove = useCallback(
     async (id: string) => {
-      dispatch({ type: 'LOADING' });
+      dispatch({ type: 'REMOVE' });
       try {
-        const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events/${id}`;
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${state.calendarId}/events/${id}`;
         const res: Response = await fetch(url, {
           method: 'DELETE',
           headers: {
@@ -83,10 +126,7 @@ const EventListProvider: FC = ({ children }) => {
         });
 
         if (res.status === 204) {
-          const filtered = state.items.filter((item) => {
-            return item.id !== id;
-          });
-          dispatch({ type: 'RESPONSE', payload: filtered });
+          dispatch({ type: 'RESPONSE_REMOVE' });
         } else {
           dispatch({ type: 'ERROR', payload: 'Error!' });
         }
@@ -94,12 +134,12 @@ const EventListProvider: FC = ({ children }) => {
         dispatch({ type: 'ERROR', payload: e });
       }
     },
-    [appState.token, state.items]
+    [appState.token, state.calendarId, state.items]
   );
 
   const insert = useCallback(
     async (command) => {
-      dispatch({ type: 'LOADING' });
+      dispatch({ type: 'INSERT' });
       try {
         const [d, s, e] = command.split(' ');
         const start = new Date(
@@ -117,14 +157,20 @@ const EventListProvider: FC = ({ children }) => {
           e.substring(2)
         );
 
+        const hour =
+          intervalToDuration({ start, end }).hours +
+          ':' +
+          intervalToDuration({ start, end }).minutes;
+
         await fetch(
-          `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
+          `https://www.googleapis.com/calendar/v3/calendars/${state.calendarId}/events`,
           {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${appState.token}`,
             },
             body: JSON.stringify({
+              summary: hour,
               start: {
                 dateTime: start.toISOString(),
                 timeZone: 'Europe/Warsaw',
@@ -141,15 +187,42 @@ const EventListProvider: FC = ({ children }) => {
         dispatch({ type: 'ERROR', payload: e });
       }
     },
-    [appState.token, state.currentDate, list]
+    [appState.token, state.currentDate, state.calendarId, list]
   );
+
+  const insertCalendar = useCallback(async () => {
+    dispatch({ type: 'INSERT_CALENDAR' });
+    try {
+      await fetch(`https://www.googleapis.com/calendar/v3/calendars`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${appState.token}`,
+        },
+        body: JSON.stringify({
+          summary: `__HOURS__${Date.now()}`,
+        }),
+      });
+      await calendarList();
+      dispatch({ type: 'RESPONSE_INSERT_CALENDAR' });
+    } catch (e) {
+      dispatch({ type: 'ERROR', payload: e });
+    }
+  }, [appState.token, calendarList]);
+
+  const setCalendarId = (id: string) => {
+    localStorage.setItem('calendarId', id);
+    dispatch({ type: 'SET_CALENDAR_ID', payload: id });
+  };
 
   const nextMonth = useCallback(() => {
     const newDate = new Date(state.currentDate);
     newDate.setMonth(state.month + 1);
     dispatch({
       type: 'CHANGE_DATE',
-      payload: { month: state.month + 1, currentDate: newDate },
+      payload: {
+        month: state.month === 11 ? 0 : state.month + 1,
+        currentDate: newDate,
+      },
     });
   }, [state.month, state.currentDate]);
 
@@ -158,22 +231,41 @@ const EventListProvider: FC = ({ children }) => {
     newDate.setMonth(state.month - 1);
     dispatch({
       type: 'CHANGE_DATE',
-      payload: { month: state.month - 1, currentDate: newDate },
+      payload: {
+        month: state.month === 0 ? 11 : state.month - 1,
+        currentDate: newDate,
+      },
     });
   }, [state.month, state.currentDate]);
+
+  useEffect(() => {
+    init();
+  }, [init]);
 
   const value = useMemo(
     () => ({
       state,
       actions: {
         list,
+        calendarList,
         remove,
         insert,
+        insertCalendar,
         nextMonth,
         prevMonth,
+        setCalendarId,
       },
     }),
-    [state, list, remove, insert, nextMonth, prevMonth]
+    [
+      state,
+      list,
+      calendarList,
+      remove,
+      insert,
+      insertCalendar,
+      nextMonth,
+      prevMonth,
+    ]
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
