@@ -1,3 +1,11 @@
+import {
+  addMonths,
+  getDate,
+  getDaysInMonth,
+  intervalToDuration,
+  subMonths,
+} from 'date-fns';
+import format from 'date-fns/format';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { FC, useEffect } from 'react';
 import { useHistory } from 'react-router';
@@ -5,29 +13,10 @@ import { useEventList } from '../../providers/EventListProvider';
 import { useApp } from './../../providers/AppProvider';
 import classes from './List.module.css';
 
-const months = [
-  'Styczeń',
-  'Luty',
-  'Marzec',
-  'Kwiecień',
-  'Maj',
-  'Czerwiec',
-  'Lipiec',
-  'Sierpień',
-  'Wrzesień',
-  'Październik',
-  'Listopad',
-  'Grudzień',
-];
-
-const getWorkTime = (start: Date, end: Date) => {
-  return Math.abs(end.getTime() - start.getTime()) / 3600000;
-};
-
 const List: FC = () => {
   const { state: appState } = useApp();
   const { state: eventListState, actions: eventListActions } = useEventList();
-  const { loading, items, currentDate, month } = eventListState;
+  const { loading, items, currentDate } = eventListState;
   const { insert, remove, list, nextMonth, prevMonth } = eventListActions;
 
   const history = useHistory();
@@ -60,77 +49,92 @@ const List: FC = () => {
 
   return (
     <div>
-      <h4>
-        <button onClick={setPrevMonth}>{months[month - 1]}</button>
-        {months[month]}
-        <button onClick={setNextMonth}>{months[month + 1]}</button>
-        {currentDate.toISOString()}
-      </h4>
+      <div className={classes.switcher}>
+        <button onClick={setPrevMonth}>
+          {format(subMonths(currentDate, 1), 'MMMM')}
+        </button>
+        <span>{format(currentDate, 'MMMM yyyy')}</span>
+        <button onClick={setNextMonth}>
+          {format(addMonths(currentDate, 1), 'MMMM')}
+        </button>
+      </div>
       {!loading ? (
-        <div className={classes.list}>
-          {items.length
-            ? items.map((event: any) => {
-                const start = new Date(event.start.dateTime);
-                const end = new Date(event.end.dateTime);
+        <>
+          <div className={classes.list}>
+            {items.length
+              ? items.map((event: any) => {
+                  const start = new Date(event.start.dateTime);
+                  const end = new Date(event.end.dateTime);
 
-                return (
-                  <div key={event.id} className={classes.event}>
-                    <div>{start.toISOString()}</div>
-                    <div>
-                      {start.getHours()}:
-                      {start.getMinutes() === 0 ? '00' : start.getMinutes()}
+                  return (
+                    <div key={event.id} className={classes.event}>
+                      <div className={classes.date}>
+                        {format(start, 'yyyy-MM-dd')}
+                      </div>
+                      <div className={classes.start}>
+                        {format(start, 'HH:mm')}
+                      </div>
+                      <div className={classes.end}>{format(end, 'HH:mm')}</div>
+                      <div className={classes.hours}>
+                        {intervalToDuration({ start, end }).hours}:
+                        {intervalToDuration({ start, end }).minutes}
+                      </div>
+                      <button
+                        className={classes.action}
+                        onClick={() => handleRemove(event.id)}
+                      >
+                        Del
+                      </button>
                     </div>
-                    <div>
-                      {end.getHours()}:
-                      {end.getMinutes() === 0 ? '00' : end.getMinutes()}
-                    </div>
-                    <div>{getWorkTime(start, end)}</div>
-                    <button onClick={() => handleRemove(event.id)}>X</button>
-                  </div>
-                );
-              })
-            : 'No hours!'}
-
-          <div className={classes.event}>
+                  );
+                })
+              : 'No hours!'}
+          </div>
+          <div className={classes.terminalContainer}>
             <Formik
-              initialValues={{ command: currentDate.getDate() + '' }}
+              initialValues={{ command: getDate(currentDate) + ' ' }}
               onSubmit={handleInsert}
             >
               <Form>
-                <Field
-                  name='command'
-                  validate={(command: string) => {
-                    let error;
-                    const maxDay = new Date(
-                      currentDate.getFullYear(),
-                      currentDate.getMonth() + 1,
-                      0
-                    ).getDate();
+                <div className={classes.terminal}>
+                  <Field
+                    autocomplete='off'
+                    name='command'
+                    validate={(command: string) => {
+                      let error;
+                      const maxDay = new Date(
+                        currentDate.getFullYear(),
+                        currentDate.getMonth() + 1,
+                        0
+                      ).getDate();
 
-                    const regex = new RegExp(
-                      /^[0-9]{1,2} [0-9]{2,4} [0-9]{2,4}$/g
-                    );
+                      const regex = new RegExp(
+                        /^[0-9]{1,2} [0-9]{2,4} [0-9]{2,4}$/g
+                      );
 
-                    if (!regex.test(command)) {
-                      error =
-                        'Invalid value provided "14 1300 1400" <day starthour endhour>!';
-                    } else {
-                      const [day, start, end] = command.split(' ');
-                      const dayNumber = Number.parseInt(day);
+                      if (!regex.test(command)) {
+                        error =
+                          'Invalid value provided "14 1300 1400" <day starthour endhour>!';
+                      } else {
+                        const [day, start, end] = command.split(' ');
+                        const dayNumber = Number.parseInt(day);
 
-                      if (dayNumber > maxDay || dayNumber < 1) {
-                        error = 'Invalid day value!';
+                        if (dayNumber > maxDay || dayNumber < 1) {
+                          error = 'Invalid day value!';
+                        }
                       }
-                    }
-                    return error;
-                  }}
-                />
-                <ErrorMessage name='command' />
-                <button type='submit'>Add</button>
+                      return error;
+                    }}
+                  />
+                  <button type='submit'>SEND</button>
+                </div>
+                <ErrorMessage name='command'>
+                  {(msg) => <div className={classes.error}>{msg}</div>}
+                </ErrorMessage>
               </Form>
             </Formik>
           </div>
-        </div>
+        </>
       ) : (
         'Loading...'
       )}

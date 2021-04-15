@@ -2,12 +2,13 @@ import React, { FC } from 'react';
 import GoogleLogin from 'react-google-login';
 import { useHistory } from 'react-router';
 import { useApp } from '../../providers/AppProvider';
+import classes from './Login.module.css';
 
 const Login: FC = () => {
   const { state, actions } = useApp();
   const history = useHistory();
   return (
-    <div>
+    <div className={classes.root}>
       {!state.isLoggedIn ? (
         <GoogleLogin
           isSignedIn
@@ -22,6 +23,13 @@ const Login: FC = () => {
           }}
           onFailure={(e) => {
             console.log(e);
+          }}
+          render={({ onClick }) => {
+            return (
+              <button className={classes.button} onClick={onClick}>
+                Login with Google Account
+              </button>
+            );
           }}
           cookiePolicy={'single_host_origin'}
           scope='https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events'

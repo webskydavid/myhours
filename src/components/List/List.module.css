@@ -1,12 +1,114 @@
 .root {
 }
 
+.switcher {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  margin-block: 12px;
+}
+
+.switcher > span {
+  text-align: center;
+}
+
 .list {
   display: grid;
   grid-auto-flow: row;
 }
 
 .event {
+  padding: 3px;
+  line-height: 20px;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'date  date hours action'
+    'start end hours action';
+}
+
+.event:nth-child(even) {
+  background-color: rgba(49, 218, 125, 0.05);
+}
+
+.date {
+  grid-area: date;
+  font-weight: 200;
+}
+.start {
+  grid-area: start;
+  font-weight: bolder;
+}
+.end {
+  grid-area: end;
+  font-weight: bolder;
+}
+.hours {
+  grid-area: hours;
+}
+.action {
+  display: flex;
+  text-align: center;
+  vertical-align: middle;
+  grid-area: action;
+  padding: 1px 10px;
+  border-radius: 0;
+  height: 20px;
+  line-height: 20px;
+  width: max-content;
+  font-weight: 900;
+  background-color: rgb(49, 218, 125);
+  color: rgb(35, 43, 49);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.terminalContainer {
+  margin-top: 12px;
+}
+
+.terminal {
   display: grid;
   grid-auto-flow: column;
+}
+
+.terminal > input,
+input:hover,
+input:active,
+input:focus {
+  border: none;
+  border-radius: 4px 0px 0px 4px;
+  padding: 6px 20px;
+  font-size: 28px;
+  background-color: rgb(58, 64, 68);
+  color: rgb(49, 218, 125);
+  outline: none;
+  width: 100%;
+}
+
+.terminal > button,
+.terminal > button:focus {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 0px 4px 4px 0px;
+  background-color: rgb(40, 168, 98);
+  color: rgb(208, 255, 214);
+  font-weight: bold;
+}
+
+.terminal > button:hover {
+  background-color: rgb(31, 133, 77);
+}
+
+.error {
+  display: flex;
+  padding: 8px;
+  margin-top: 8px;
+  background: rgb(255, 164, 164);
+  border: none;
+  border-radius: 4px;
+  color: rgb(134, 13, 13);
+  font-size: 14px;
 }

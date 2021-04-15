@@ -50,7 +50,10 @@ const EventListProvider: FC = ({ children }) => {
     dispatch({ type: 'LOADING' });
     try {
       const filter = getFilter(state.currentDate);
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events${filter}`;
+      const orderBy = '&orderBy=startTime';
+      const singleEvents = '&singleEvents=true';
+      const query = `${filter}${singleEvents}${orderBy}`;
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events${query}`;
       const res: Response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${appState.token}`,
@@ -58,7 +61,6 @@ const EventListProvider: FC = ({ children }) => {
       });
       if (res.status === 200) {
         const { items } = await res.json();
-
         dispatch({ type: 'RESPONSE', payload: items });
       } else {
         dispatch({ type: 'ERROR', payload: 'Error!' });
