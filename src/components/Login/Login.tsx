@@ -16,7 +16,6 @@ const Login: FC = () => {
           buttonText='Login'
           onSuccess={(u: any): void => {
             if (u) {
-              console.log(u);
               actions.login(u.tokenObj);
               history.push('/');
             }

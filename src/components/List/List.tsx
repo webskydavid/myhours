@@ -83,7 +83,7 @@ const List: FC = () => {
                         className={classes.action}
                         onClick={() => handleRemove(event.id)}
                       >
-                        Del
+                        Delete
                       </button>
                     </div>
                   );
