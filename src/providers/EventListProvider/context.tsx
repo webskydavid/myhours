@@ -4,8 +4,11 @@ import { IState } from './reducer';
 export interface ContextType {
   state: IState;
   actions: {
-    list: Function;
-    insert: Function;
+    list: () => void;
+    remove: (eventId: string) => void;
+    insert: (command: string) => void;
+    nextMonth: () => void;
+    prevMonth: () => void;
   };
 }
 
