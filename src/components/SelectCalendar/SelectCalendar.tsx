@@ -37,7 +37,9 @@ const SelectCalendar: FC = () => {
           <button type='button' onClick={actions.insertCalendar}>
             Add calendar
           </button>
-        ) : !exists || showSelect ? (
+        ) : null}
+
+        {!exists || showSelect ? (
           <>
             <Field as='select' name='id'>
               <option value=''>Select calendar</option>
@@ -53,8 +55,11 @@ const SelectCalendar: FC = () => {
             </Field>
             <button type='submit'>Select</button>
           </>
-        ) : (
+        ) : null}
+
+        {exists && !showSelect ? (
           <button
+            type='button'
             onClick={() => {
               actions.calendarList();
               setShowSelect(true);
@@ -62,7 +67,7 @@ const SelectCalendar: FC = () => {
           >
             Select calendar
           </button>
-        )}
+        ) : null}
       </Form>
     </Formik>
   );
