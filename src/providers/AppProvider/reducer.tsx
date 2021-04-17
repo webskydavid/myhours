@@ -14,7 +14,7 @@ export const initialState = {
   isLoggedIn: false,
   loading: false,
   error: null,
-  token: ''
+  token: '',
 };
 
 export const reducer = (state: IState, action: IReducer) => {

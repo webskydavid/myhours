@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
 import GoogleLogin from 'react-google-login';
 import { useHistory } from 'react-router';
-import { useApp } from '../../providers/AppProvider';
+import { useActions, useAppState } from '../../providers/AppProvider/provider';
 import classes from './Login.module.css';
 
 const Login: FC = () => {
-  const { state, actions } = useApp();
+  const state = useAppState();
+  const { login } = useActions();
   const history = useHistory();
   return (
     <div className={classes.root}>
@@ -16,7 +17,7 @@ const Login: FC = () => {
           buttonText='Login'
           onSuccess={(u: any): void => {
             if (u) {
-              actions.login(u.tokenObj);
+              login(u.tokenObj);
               history.push('/');
             }
           }}

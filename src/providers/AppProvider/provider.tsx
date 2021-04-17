@@ -1,35 +1,35 @@
-import { FC, useReducer, useMemo, useCallback, Reducer } from 'react';
-import { initialState, IReducer, IState, reducer } from './reducer';
-import { AppContext } from './context';
+import { useReducer, Reducer } from 'react';
+import { initialState, IState, reducer } from './reducer';
+import { createContainer } from 'react-tracked';
 
-const AppProvider: FC = ({ children }) => {
-  const [state, dispatch] = useReducer<Reducer<IState, IReducer>>(
-    reducer,
-    initialState
-  );
+type IAction =
+  | { type: 'IS_LOGGED_IN'; payload: boolean }
+  | { type: 'TOKEN'; payload: string };
 
-  const login = useCallback(async (tokenObj: any) => {
+const useValue: any = () =>
+  useReducer<Reducer<IState, IAction>>(reducer, initialState);
+
+export const {
+  Provider: AppProvider,
+  useTrackedState: useAppState,
+  useUpdate: useAppDispatch,
+} = createContainer<IState, any, any>(useValue);
+
+export const useActions = () => {
+  const dispatch = useAppDispatch();
+
+  const login = async (tokenObj: any) => {
     dispatch({ type: 'IS_LOGGED_IN', payload: true });
     dispatch({ type: 'TOKEN', payload: tokenObj.access_token });
-  }, []);
+  };
 
-  const logout = useCallback(() => {
+  const logout = () => {
     dispatch({ type: 'IS_LOGGED_IN', payload: false });
     dispatch({ type: 'TOKEN', payload: '' });
-  }, [dispatch]);
+  };
 
-  const value = useMemo(
-    () => ({
-      state,
-      actions: {
-        login,
-        logout
-      }
-    }),
-    [state, login, logout]
-  );
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return {
+    login,
+    logout,
+  };
 };
-
-export default AppProvider;

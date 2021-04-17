@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { AppProvider } from './providers/AppProvider';
+import { AppProvider } from './providers/AppProvider/provider';
 import List from './components/List/List';
 import Logout from './components/Logout/Logout';
 import EventListProvider from './providers/EventListProvider/provider';

@@ -17,6 +17,7 @@ const EventForm: FC<Props> = ({ classes, handleInsert, currentDate }) => {
       <Form>
         <div className={classes.terminal}>
           <Field
+            type='tel'
             autoComplete='off'
             name='command'
             validate={(command: string) => {

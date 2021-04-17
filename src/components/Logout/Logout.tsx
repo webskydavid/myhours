@@ -1,10 +1,11 @@
 import { GoogleLogout } from 'react-google-login';
 import { useHistory } from 'react-router';
-import { useApp } from '../../providers/AppProvider';
+import { useActions, useAppState } from '../../providers/AppProvider/provider';
 import classes from './Logout.module.css';
 
 const Logout = () => {
-  const { state, actions } = useApp();
+  const state = useAppState();
+  const { logout } = useActions();
   const history = useHistory();
   return (
     <div className={classes.root}>
@@ -14,7 +15,7 @@ const Logout = () => {
           buttonText='Logout'
           onLogoutSuccess={() => {
             console.log('Logout');
-            actions.logout();
+            logout();
             history.push('/login');
           }}
           onFailure={() => {

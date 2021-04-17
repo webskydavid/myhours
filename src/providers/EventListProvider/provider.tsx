@@ -4,13 +4,12 @@ import {
   useMemo,
   useCallback,
   Reducer,
-  useState,
   useEffect,
 } from 'react';
 import { initialState, IReducer, IState, reducer } from './reducer';
 import { Context } from './context';
-import { useApp } from '../AppProvider';
 import { intervalToDuration } from 'date-fns';
+import { useAppState } from '../AppProvider/provider';
 
 const getFilter = (currentDate: any) => {
   const date = {
@@ -47,7 +46,7 @@ const getFilter = (currentDate: any) => {
 };
 
 const EventListProvider: FC = ({ children }) => {
-  const { state: appState } = useApp();
+  const appState = useAppState();
   const [state, dispatch] = useReducer<Reducer<IState, IReducer>>(
     reducer,
     initialState
@@ -127,6 +126,7 @@ const EventListProvider: FC = ({ children }) => {
 
         if (res.status === 204) {
           dispatch({ type: 'RESPONSE_REMOVE' });
+          await list();
         } else {
           dispatch({ type: 'ERROR', payload: 'Error!' });
         }
@@ -134,7 +134,7 @@ const EventListProvider: FC = ({ children }) => {
         dispatch({ type: 'ERROR', payload: e });
       }
     },
-    [appState.token, state.calendarId, state.items]
+    [appState.token, state.calendarId, list]
   );
 
   const insert = useCallback(
