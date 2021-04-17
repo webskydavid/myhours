@@ -1,0 +1,15 @@
+Bugs:
+    ☐ Command validation. No support for values like 900 -> 9:00. Command not run if using 900 hour.
+
+Feature:
+    ☐ Improve command for adding new hours
+    ☐ Improve adding and selecting hours calendars
+    ☐ Allow to have multiple calendars
+    ☐ Allow to add placeholders
+    ☐ Background insert and delete for events
+    ☐ Show numeric keyboard on mobile
+    
+Refactor:
+    ☐ Contexts
+    ☐ Components
+    
