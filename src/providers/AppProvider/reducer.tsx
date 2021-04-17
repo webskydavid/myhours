@@ -1,8 +1,13 @@
+export const LOGIN_REQUEST = 'LOGIN_REQUEST';
+export const LOGIN_RESPONSE = 'LOGIN_RESPONSE';
+export const LOGIN_FAILURE = 'LOGIN_FAILURE';
+export const LOGOUT_RESPONSE = 'LOGOUT_RESPONSE';
+
 export interface IState {
-  isLoggedIn: boolean;
-  loading: boolean;
-  error: Error | null;
+  error: string | null;
   token: string;
+  isAuthenticated: boolean;
+  state: string;
 }
 
 export interface IReducer {
@@ -11,23 +16,26 @@ export interface IReducer {
 }
 
 export const initialState = {
-  isLoggedIn: false,
-  loading: false,
   error: null,
   token: '',
+  isAuthenticated: false,
+  state: 'IDLE',
 };
 
-export const reducer = (state: IState, action: IReducer) => {
+export const reducer = (state: IState, action: any) => {
   const { type, payload } = action;
+  console.groupCollapsed('appProvider reducer:', type);
+  console.log(state, action);
+  console.groupEnd();
   switch (type) {
-    case 'IS_LOGGED_IN':
-      return { ...state, isLoggedIn: payload };
-    case 'TOKEN':
-      return { ...state, token: payload };
-    case 'LOADING':
-      return { ...state, loading: payload };
-    case 'ERROR':
-      return { ...state, error: payload };
+    case LOGIN_REQUEST:
+      return { ...state, state: 'BUSY' };
+    case LOGIN_RESPONSE:
+      return { ...state, state: 'IDLE', isAuthenticated: true, token: payload };
+    case LOGIN_FAILURE:
+      return { ...state, state: 'IDLE', error: payload };
+    case LOGOUT_RESPONSE:
+      return { ...state, state: 'IDLE', isAuthenticated: false, token: '' };
     default:
       throw new Error(`Unhandled action: ${type}`);
   }

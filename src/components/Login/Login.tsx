@@ -6,11 +6,11 @@ import classes from './Login.module.css';
 
 const Login: FC = () => {
   const state = useAppState();
-  const { login } = useActions();
+  const { login, loginFailure } = useActions();
   const history = useHistory();
   return (
     <div className={classes.root}>
-      {!state.isLoggedIn ? (
+      {!state.isAuthenticated ? (
         <GoogleLogin
           isSignedIn
           clientId='140151512167-vkvlkuo7qvpbfgvlvm7u675so24gp6a0.apps.googleusercontent.com'
@@ -22,7 +22,7 @@ const Login: FC = () => {
             }
           }}
           onFailure={(e) => {
-            console.log(e);
+            loginFailure();
           }}
           render={({ onClick }) => {
             return (

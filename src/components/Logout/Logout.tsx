@@ -9,7 +9,7 @@ const Logout = () => {
   const history = useHistory();
   return (
     <div className={classes.root}>
-      {state.isLoggedIn ? (
+      {state.isAuthenticated ? (
         <GoogleLogout
           clientId='140151512167-vkvlkuo7qvpbfgvlvm7u675so24gp6a0.apps.googleusercontent.com'
           buttonText='Logout'

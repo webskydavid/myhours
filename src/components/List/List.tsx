@@ -24,22 +24,22 @@ const List: FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!appState.isLoggedIn) {
+    if (!appState.isAuthenticated) {
       history.push('/login');
     }
-  }, [appState.isLoggedIn, history]);
+  }, [appState.isAuthenticated, history]);
 
   useEffect(() => {
     console.log(calendarId);
 
-    if (appState.isLoggedIn) {
+    if (appState.isAuthenticated) {
       if (calendarId !== '') {
         list();
       } else {
         calendar();
       }
     }
-  }, [list, calendar, appState.isLoggedIn, calendarId]);
+  }, [list, calendar, appState.isAuthenticated, calendarId]);
 
   const handleInsert = (values: any) => {
     insert(values.command);

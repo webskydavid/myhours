@@ -25,7 +25,7 @@ export const initialState = {
 
 export const reducer = (state: IState, action: IReducer): IState => {
   const { type, payload } = action;
-  console.groupCollapsed('REDUCER', type);
+  console.groupCollapsed('EventListProvider reducer:', type);
   console.log(state, action);
   console.groupEnd();
 
