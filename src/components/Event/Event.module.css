@@ -1,0 +1,58 @@
+.event {
+  user-select: none;
+  padding: 3px;
+  line-height: 20px;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-columns: 1fr 1fr 0.5fr max-content;
+  grid-template-areas:
+    'date  date date date'
+    'start end hours action';
+}
+
+.eventSelected {
+  composes: event;
+  background-color: rgba(49, 218, 125, 0.301);
+}
+
+.eventEven {
+  composes: event;
+  background-color: rgba(49, 218, 125, 0.05);
+}
+
+.date {
+  grid-area: date;
+  font-weight: 100;
+}
+.start {
+  grid-area: start;
+  font-weight: bolder;
+}
+.end {
+  grid-area: end;
+  font-weight: bolder;
+}
+.hours {
+  grid-area: hours;
+}
+.action {
+  display: flex;
+  text-align: center;
+  vertical-align: middle;
+  grid-area: action;
+  padding: 1px 10px;
+  border-radius: 0;
+  height: 20px;
+  line-height: 20px;
+  width: max-content;
+  font-weight: 900;
+  background-color: rgb(170, 81, 69);
+  color: rgb(255, 155, 155);
+  font-size: 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.action:hover {
+  background-color: rgba(49, 218, 125, 0.74);
+}

@@ -1,3 +1,5 @@
+import { logger } from '../logger';
+
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_RESPONSE = 'LOGIN_RESPONSE';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
@@ -24,9 +26,7 @@ export const initialState = {
 
 export const reducer = (state: IState, action: any) => {
   const { type, payload } = action;
-  console.groupCollapsed('appProvider reducer:', type);
-  console.log(state, action);
-  console.groupEnd();
+  logger('AppProvider reducer:', state, type, action);
   switch (type) {
     case LOGIN_REQUEST:
       return { ...state, state: 'BUSY' };

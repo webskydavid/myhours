@@ -1,25 +1,24 @@
 import { addMonths, intervalToDuration, subMonths } from 'date-fns';
 import format from 'date-fns/format';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useAppState } from '../../providers/AppProvider/provider';
 import { useEventList } from '../../providers/EventListProvider';
+import Event from '../Event/Event';
 import EventForm from '../EventForm/EventForm';
 import SelectCalendar from '../SelectCalendar/SelectCalendar';
+import Switcher from '../Switcher/Switcher';
 import classes from './List.module.css';
 
 const List: FC = () => {
+  const [editEvent, setEditEvent] = useState<any | null>({
+    event: null,
+    edit: false,
+  });
   const appState = useAppState();
   const { state: eventListState, actions: eventListActions } = useEventList();
   const { loading, items, currentDate, calendarId } = eventListState;
-  const {
-    insert,
-    remove,
-    list,
-    calendarList: calendar,
-    nextMonth,
-    prevMonth,
-  } = eventListActions;
+  const { insert, remove, list, calendarList: calendar } = eventListActions;
 
   const history = useHistory();
 
@@ -30,8 +29,6 @@ const List: FC = () => {
   }, [appState.isAuthenticated, history]);
 
   useEffect(() => {
-    console.log(calendarId);
-
     if (appState.isAuthenticated) {
       if (calendarId !== '') {
         list();
@@ -49,56 +46,31 @@ const List: FC = () => {
     remove(id);
   };
 
-  const setPrevMonth = () => {
-    prevMonth();
-  };
-
-  const setNextMonth = () => {
-    nextMonth();
+  const handleEdit = (event: any) => {
+    setEditEvent((e: any) => ({
+      event,
+      edit: !e.edit,
+    }));
   };
 
   return (
     <div>
       <SelectCalendar />
-      <div className={classes.switcher}>
-        <button onClick={setPrevMonth}>
-          {format(subMonths(currentDate, 1), 'MMMM')}
-        </button>
-        <span>{format(currentDate, 'MMMM yyyy')}</span>
-        <button onClick={setNextMonth}>
-          {format(addMonths(currentDate, 1), 'MMMM')}
-        </button>
-      </div>
+      <Switcher />
       {!loading ? (
         <>
           <div className={classes.list}>
             {!!items.length
-              ? items.map((event: any) => {
-                  const start = new Date(event.start.dateTime);
-                  const end = new Date(event.end.dateTime);
-
-                  return (
-                    <div key={event.id} className={classes.event}>
-                      <div className={classes.date}>
-                        {format(start, 'yyyy-MM-dd')}
-                      </div>
-                      <div className={classes.start}>
-                        {format(start, 'HH:mm')}
-                      </div>
-                      <div className={classes.end}>{format(end, 'HH:mm')}</div>
-                      <div className={classes.hours}>
-                        {intervalToDuration({ start, end }).hours}:
-                        {intervalToDuration({ start, end }).minutes}
-                      </div>
-                      <button
-                        className={classes.action}
-                        onClick={() => handleRemove(event.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  );
-                })
+              ? items.map((event: any, index: number) => (
+                  <Event
+                    key={event.id}
+                    event={event}
+                    edit={editEvent}
+                    index={index}
+                    onEdit={handleEdit}
+                    onRemove={handleRemove}
+                  />
+                ))
               : 'No hours!'}
           </div>
           <div className={classes.terminalContainer}>
@@ -106,6 +78,7 @@ const List: FC = () => {
               classes={classes}
               currentDate={currentDate}
               handleInsert={handleInsert}
+              editEvent={editEvent}
             />
           </div>
         </>

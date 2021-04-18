@@ -1,3 +1,5 @@
+import { logger } from '../logger';
+
 export interface IState {
   loading: boolean;
   error: Error | null;
@@ -25,9 +27,7 @@ export const initialState = {
 
 export const reducer = (state: IState, action: IReducer): IState => {
   const { type, payload } = action;
-  console.groupCollapsed('EventListProvider reducer:', type);
-  console.log(state, action);
-  console.groupEnd();
+  logger('EventListProvider reducer:', state, type, action);
 
   switch (type) {
     case 'INIT': {

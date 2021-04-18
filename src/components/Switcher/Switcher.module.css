@@ -1,0 +1,11 @@
+.root {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  margin-block: 12px;
+}
+
+.root > span {
+  text-align: center;
+}

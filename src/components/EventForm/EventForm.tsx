@@ -1,17 +1,34 @@
 import { FC } from 'react';
-import { getDate } from 'date-fns';
+import { format, getDate } from 'date-fns';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 
 interface Props {
   classes: { [key: string]: string };
   handleInsert: (values: any) => void;
   currentDate: Date;
+  editEvent: any;
 }
 
-const EventForm: FC<Props> = ({ classes, handleInsert, currentDate }) => {
+const EventForm: FC<Props> = ({
+  classes,
+  handleInsert,
+  currentDate,
+  editEvent,
+}) => {
+  const command = editEvent.event
+    ? format(new Date(editEvent.event.start.dateTime), 'dd HHmm') +
+      ' ' +
+      format(new Date(editEvent.event.end.dateTime), 'HHmm')
+    : '';
+
+  console.log(command, editEvent);
+
   return (
     <Formik
-      initialValues={{ command: getDate(currentDate) + ' ' }}
+      initialValues={{
+        command: editEvent.edit ? command : getDate(currentDate) + ' ',
+      }}
+      enableReinitialize={true}
       onSubmit={handleInsert}
     >
       <Form>
