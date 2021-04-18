@@ -15,7 +15,6 @@ const Event: FC<Props> = ({ event, edit, index, onEdit, onRemove }) => {
   const start = new Date(event.start.dateTime);
   const end = new Date(event.end.dateTime);
   const isEdit = edit.edit && edit.event?.id === event.id;
-  console.log(edit, isEdit);
 
   return (
     <div

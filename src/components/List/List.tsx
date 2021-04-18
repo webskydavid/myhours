@@ -1,9 +1,10 @@
-import { addMonths, intervalToDuration, subMonths } from 'date-fns';
-import format from 'date-fns/format';
 import { FC, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useAppState } from '../../providers/AppProvider/provider';
-import { useEventList } from '../../providers/EventListProvider';
+import {
+  useEventListActions,
+  useEventListState,
+} from '../../providers/EventListProvider/provider';
 import Event from '../Event/Event';
 import EventForm from '../EventForm/EventForm';
 import SelectCalendar from '../SelectCalendar/SelectCalendar';
@@ -16,7 +17,8 @@ const List: FC = () => {
     edit: false,
   });
   const appState = useAppState();
-  const { state: eventListState, actions: eventListActions } = useEventList();
+  const eventListState = useEventListState();
+  const eventListActions = useEventListActions(appState);
   const { loading, items, currentDate, calendarId } = eventListState;
   const { insert, remove, list, calendarList: calendar } = eventListActions;
 

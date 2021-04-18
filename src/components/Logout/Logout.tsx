@@ -14,7 +14,6 @@ const Logout = () => {
           clientId='140151512167-vkvlkuo7qvpbfgvlvm7u675so24gp6a0.apps.googleusercontent.com'
           buttonText='Logout'
           onLogoutSuccess={() => {
-            console.log('Logout');
             logout();
             history.push('/login');
           }}

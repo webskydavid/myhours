@@ -1,12 +1,19 @@
 import { addMonths, format, subMonths } from 'date-fns';
 import React, { FC } from 'react';
-import { useEventList } from '../../providers/EventListProvider';
+import { useAppState } from '../../providers/AppProvider/provider';
+import {
+  useEventListActions,
+  useEventListState,
+} from '../../providers/EventListProvider/provider';
 import classes from './Switcher.module.css';
 
 const Switcher: FC = () => {
-  const { state, actions } = useEventList();
+  const appState = useAppState();
+  const state = useEventListState();
+  const actions = useEventListActions(appState);
   const { currentDate } = state;
   const { nextMonth, prevMonth } = actions;
+
   return (
     <div className={classes.root}>
       <button onClick={prevMonth}>

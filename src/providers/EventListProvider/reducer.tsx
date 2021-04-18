@@ -15,13 +15,15 @@ export interface IReducer {
   payload?: any;
 }
 
+const newDate = new Date();
+
 export const initialState = {
   loading: false,
   error: null,
   items: [],
   calendarList: [],
-  currentDate: new Date(),
-  month: 0,
+  currentDate: newDate,
+  month: newDate.getMonth(),
   calendarId: localStorage.getItem('calendarId') || '',
 };
 
@@ -30,10 +32,6 @@ export const reducer = (state: IState, action: IReducer): IState => {
   logger('EventListProvider reducer:', state, type, action);
 
   switch (type) {
-    case 'INIT': {
-      const { month, currentDate } = payload;
-      return { ...state, month, currentDate };
-    }
     case 'LOADING':
       return { ...state, loading: true };
     case 'RESPONSE':

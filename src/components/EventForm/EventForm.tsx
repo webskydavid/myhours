@@ -21,8 +21,6 @@ const EventForm: FC<Props> = ({
       format(new Date(editEvent.event.end.dateTime), 'HHmm')
     : '';
 
-  console.log(command, editEvent);
-
   return (
     <Formik
       initialValues={{

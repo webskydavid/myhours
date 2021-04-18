@@ -1,6 +1,10 @@
 import { Field, Form, Formik } from 'formik';
 import React, { FC, useEffect, useState } from 'react';
-import { useEventList } from '../../providers/EventListProvider';
+import { useAppState } from '../../providers/AppProvider/provider';
+import {
+  useEventListActions,
+  useEventListState,
+} from '../../providers/EventListProvider/provider';
 
 const useLocalStorage = () => {
   const [id, setId] = useState<string | null>();
@@ -16,13 +20,17 @@ const useLocalStorage = () => {
 const SelectCalendar: FC = () => {
   const [showSelect, setShowSelect] = useState(false);
   const { exists, id } = useLocalStorage();
-  const { state, actions } = useEventList();
+  const appState = useAppState();
+  const state = useEventListState();
+  const actions = useEventListActions(appState);
 
   useEffect(() => {
     if (id && exists) {
+      console.log('setCalendarId useEffect', id, exists);
+
       actions.setCalendarId(id);
     }
-  }, [exists, id]);
+  }, [actions, exists, id]);
 
   return (
     <Formik
