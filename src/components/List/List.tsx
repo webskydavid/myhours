@@ -1,5 +1,7 @@
+import { differenceInMinutes, format } from 'date-fns';
 import { FC, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { IEvent } from '../../models/event';
 import { useAppState } from '../../providers/AppProvider/provider';
 import {
   useEventListActions,
@@ -7,20 +9,15 @@ import {
 } from '../../providers/EventListProvider/provider';
 import Event from '../Event/Event';
 import EventForm from '../EventForm/EventForm';
-import SelectCalendar from '../SelectCalendar/SelectCalendar';
 import Switcher from '../Switcher/Switcher';
 import classes from './List.module.css';
 
 const List: FC = () => {
-  const [editEvent, setEditEvent] = useState<any | null>({
-    event: null,
-    edit: false,
-  });
   const appState = useAppState();
   const eventListState = useEventListState();
   const eventListActions = useEventListActions(appState);
   const { loading, items, currentDate, calendarId } = eventListState;
-  const { insert, remove, list, calendarList: calendar } = eventListActions;
+  const { insert, remove, list } = eventListActions;
 
   const history = useHistory();
 
@@ -32,13 +29,9 @@ const List: FC = () => {
 
   useEffect(() => {
     if (appState.isAuthenticated) {
-      if (calendarId !== '') {
-        list();
-      } else {
-        calendar();
-      }
+      list();
     }
-  }, [list, calendar, appState.isAuthenticated, calendarId]);
+  }, [list, appState.isAuthenticated, calendarId]);
 
   const handleInsert = (values: any) => {
     insert(values.command);
@@ -48,45 +41,48 @@ const List: FC = () => {
     remove(id);
   };
 
-  const handleEdit = (event: any) => {
-    setEditEvent((e: any) => ({
-      event,
-      edit: !e.edit,
-    }));
-  };
+  const handleEdit = (event: any) => {};
 
   return (
     <div>
-      <SelectCalendar />
       <Switcher />
-      {!loading ? (
-        <>
-          <div className={classes.list}>
-            {!!items.length
-              ? items.map((event: any, index: number) => (
+      {loading ? 'Loading...' : ''}
+      <>
+        <div className={classes.list}>
+          {!!items.length
+            ? items.map((event: IEvent, index: number) => {
+                return (
                   <Event
                     key={event.id}
                     event={event}
-                    edit={editEvent}
                     index={index}
                     onEdit={handleEdit}
                     onRemove={handleRemove}
                   />
-                ))
-              : 'No hours!'}
-          </div>
-          <div className={classes.terminalContainer}>
-            <EventForm
-              classes={classes}
-              currentDate={currentDate}
-              handleInsert={handleInsert}
-              editEvent={editEvent}
-            />
-          </div>
-        </>
-      ) : (
-        'Loading...'
-      )}
+                );
+              })
+            : 'No hours!'}
+        </div>
+        <div>
+          {items.length
+            ? 'Total hours: ' +
+              (
+                items.reduce((prev, val) => {
+                  const start = new Date(val.start.dateTime);
+                  const end = new Date(val.end.dateTime);
+                  return prev + differenceInMinutes(end, start);
+                }, 0) / 60
+              ).toFixed(2)
+            : '0.00h'}
+        </div>
+        <div className={classes.terminalContainer}>
+          <EventForm
+            classes={classes}
+            currentDate={currentDate}
+            handleInsert={handleInsert}
+          />
+        </div>
+      </>
     </div>
   );
 };

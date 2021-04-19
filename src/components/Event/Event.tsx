@@ -1,43 +1,47 @@
-import { format, intervalToDuration } from 'date-fns';
-import React, { FC } from 'react';
+import {
+  differenceInHours,
+  differenceInMinutes,
+  format,
+  intervalToDuration,
+} from 'date-fns';
+import React, { FC, useState } from 'react';
 import { IEvent } from '../../models/event';
 import classes from './Event.module.css';
 
 interface Props {
   event: IEvent;
-  edit: any;
   index: number;
   onEdit: (event: any) => void;
   onRemove: (id: string) => void;
 }
 
-const Event: FC<Props> = ({ event, edit, index, onEdit, onRemove }) => {
+const Event: FC<Props> = ({ event, index, onEdit, onRemove }) => {
+  const [selectedEvent, setSelectedEvent] = useState(event);
   const start = new Date(event.start.dateTime);
   const end = new Date(event.end.dateTime);
-  const isEdit = edit.edit && edit.event?.id === event.id;
 
   return (
-    <div
-      className={
-        isEdit
-          ? classes.eventSelected
-          : index % 2 === 0
-          ? classes.event
-          : classes.eventEven
-      }
-      onClick={() => onEdit(event)}
-    >
-      <div className={classes.date}>{format(start, 'yyyy-MM-dd')}</div>
-      <div className={classes.start}>{format(start, 'HH:mm')}</div>
-      <div className={classes.end}>{format(end, 'HH:mm')}</div>
-      <div className={classes.hours}>
-        {intervalToDuration({ start, end }).hours}:
-        {intervalToDuration({ start, end }).minutes}
+    <>
+      {event.divider ? <div className={classes.divider}></div> : null}
+      <div
+        className={
+          selectedEvent.selected ? classes.eventSelected : classes.event
+        }
+        onClick={() => {
+          setSelectedEvent((e) => ({ ...e, selected: !e.selected }));
+        }}
+      >
+        <div className={classes.date}>{format(start, 'yyyy-MM-dd')}</div>
+        <div className={classes.start}>{format(start, 'HH:mm')}</div>
+        <div className={classes.end}>{format(end, 'HH:mm')}</div>
+        <div className={classes.hours}>
+          {(differenceInMinutes(end, start) / 60).toFixed(2)}h
+        </div>
+        <button className={classes.action} onClick={() => onRemove(event.id)}>
+          Delete
+        </button>
       </div>
-      <button className={classes.action} onClick={() => onRemove(event.id)}>
-        Delete
-      </button>
-    </div>
+    </>
   );
 };
 

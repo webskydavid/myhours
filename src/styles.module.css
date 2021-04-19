@@ -1,13 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;400;500;600;700&display=swap');
 
 * {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 16px;
-  color: rgb(49, 218, 125);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background-color: rgb(35, 43, 49);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+html,
+body,
+body > div {
+  height: 100%;
 }
 
 button {

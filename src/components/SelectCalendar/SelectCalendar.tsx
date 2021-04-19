@@ -1,5 +1,6 @@
 import { Field, Form, Formik } from 'formik';
 import React, { FC, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { useAppState } from '../../providers/AppProvider/provider';
 import {
   useEventListActions,
@@ -14,70 +15,60 @@ const useLocalStorage = () => {
     setId(localStorage.getItem(KEY));
   }, []);
 
-  return { exists: id && id !== null && id !== '', id };
+  return { id };
 };
 
 const SelectCalendar: FC = () => {
-  const [showSelect, setShowSelect] = useState(false);
-  const { exists, id } = useLocalStorage();
+  const { id } = useLocalStorage();
   const appState = useAppState();
-  const state = useEventListState();
+  const { loading, calendarList } = useEventListState();
   const actions = useEventListActions(appState);
+  const history = useHistory();
 
   useEffect(() => {
-    if (id && exists) {
-      console.log('setCalendarId useEffect', id, exists);
+    actions.calendarList();
+  }, []);
 
-      actions.setCalendarId(id);
+  useEffect(() => {
+    if (id) {
+      history.push('/');
     }
-  }, [actions, exists, id]);
+  }, [id, history]);
 
   return (
-    <Formik
-      initialValues={{ id: '' }}
-      onSubmit={(values) => {
-        setShowSelect(false);
-        return actions.setCalendarId(values.id);
-      }}
-    >
-      <Form>
-        {!state.calendarList.length && !exists ? (
-          <button type='button' onClick={actions.insertCalendar}>
-            Add calendar
-          </button>
-        ) : null}
+    <>
+      <h4>Select one calendar:</h4>
+      <div>
+        {!loading
+          ? calendarList.map((calendar) => {
+              return (
+                <div
+                  key={calendar.id}
+                  onClick={() => {
+                    console.log('select', calendar.id);
+                    actions.setCalendarId(calendar.id);
+                  }}
+                >
+                  {calendar.summary}
+                </div>
+              );
+            })
+          : 'Progressing...'}
+      </div>
 
-        {!exists || showSelect ? (
-          <>
-            <Field as='select' name='id'>
-              <option value=''>Select calendar</option>
-              {!!state.calendarList.length
-                ? state.calendarList.map((calendar) => {
-                    return (
-                      <option key={calendar.id} value={calendar.id}>
-                        {calendar.summary}
-                      </option>
-                    );
-                  })
-                : null}
-            </Field>
-            <button type='submit'>Select</button>
-          </>
-        ) : null}
-
-        {exists && !showSelect ? (
+      {!calendarList.length ? (
+        <>
+          <h4>No calendar found</h4>
           <button
             type='button'
-            onClick={() => {
-              actions.calendarList();
-              setShowSelect(true);
-            }}
+            onClick={actions.insertCalendar}
+            disabled={loading}
           >
-            Select calendar
+            Add calendar
           </button>
-        ) : null}
-      </Form>
-    </Formik>
+        </>
+      ) : null}
+    </>
   );
 };
 

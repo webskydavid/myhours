@@ -6,28 +6,25 @@ interface Props {
   classes: { [key: string]: string };
   handleInsert: (values: any) => void;
   currentDate: Date;
-  editEvent: any;
 }
 
-const EventForm: FC<Props> = ({
-  classes,
-  handleInsert,
-  currentDate,
-  editEvent,
-}) => {
-  const command = editEvent.event
-    ? format(new Date(editEvent.event.start.dateTime), 'dd HHmm') +
-      ' ' +
-      format(new Date(editEvent.event.end.dateTime), 'HHmm')
-    : '';
+const EventForm: FC<Props> = ({ classes, handleInsert, currentDate }) => {
+  // const command = editEvent.event
+  //   ? format(new Date(editEvent.event.start.dateTime), 'dd HHmm') +
+  //     ' ' +
+  //     format(new Date(editEvent.event.end.dateTime), 'HHmm')
+  //   : '';
 
   return (
     <Formik
       initialValues={{
-        command: editEvent.edit ? command : getDate(currentDate) + ' ',
+        command: getDate(currentDate) + ' ',
       }}
       enableReinitialize={true}
-      onSubmit={handleInsert}
+      onSubmit={(values, { resetForm }) => {
+        resetForm();
+        return handleInsert(values);
+      }}
     >
       <Form>
         <div className={classes.terminal}>

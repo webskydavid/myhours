@@ -1,0 +1,32 @@
+.theme {
+  --primary: rgb(31, 78, 74);
+  --secondary: rgb(29 179 96);
+  --background: rgb(255, 255, 255);
+  --error: rgb(255, 164, 164);
+  --surface: rgb(255, 255, 255);
+
+  --on-primary: rgb(37, 85, 81);
+  --on-secondary: rgb(255, 255, 255);
+  --on-error: rgb(134, 13, 13);
+  --on-surface: rgb(0, 0, 0);
+
+  --spacing-lg: 24px;
+  --spacing-md: 16px;
+  --spacing-xs: 8px;
+
+  --font-lg: 24px;
+  --font-md: 16px;
+  --font-xs: 14px;
+
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-xs: 4px;
+
+  background: var(--background);
+  height: 100%;
+  padding: var(--spacing-xs);
+
+  font-family: 'Roboto Mono', monospace;
+  font-size: var(--font-md);
+  color: var(--on-surface);
+}

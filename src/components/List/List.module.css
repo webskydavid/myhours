@@ -1,8 +1,5 @@
-.root {
-}
-
 .terminalContainer {
-  margin-top: 12px;
+  margin-top: var(--spacing-md);
 }
 
 .terminal {
@@ -15,11 +12,11 @@ input:hover,
 input:active,
 input:focus {
   border: none;
-  border-radius: 4px 0px 0px 4px;
-  padding: 6px 20px;
-  font-size: 28px;
+  border-radius: var(--radius-xs) 0px 0px var(--radius-xs);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  font-size: var(--font-lg);
   background-color: rgb(58, 64, 68);
-  color: rgb(49, 218, 125);
+  color: var(--secondary);
   outline: none;
   width: 100%;
 }
@@ -29,9 +26,9 @@ input:focus {
   cursor: pointer;
   outline: none;
   border: none;
-  border-radius: 0px 4px 4px 0px;
-  background-color: rgb(40, 168, 98);
-  color: rgb(208, 255, 214);
+  border-radius: 0px var(--radius-xs) var(--radius-xs) 0px;
+  background-color: var(--secondary);
+  color: var(--on-secondary);
   font-weight: bold;
 }
 
@@ -41,11 +38,11 @@ input:focus {
 
 .error {
   display: flex;
-  padding: 8px;
-  margin-top: 8px;
-  background: rgb(255, 164, 164);
+  padding: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+  background: var(--error);
   border: none;
-  border-radius: 4px;
-  color: rgb(134, 13, 13);
-  font-size: 14px;
+  border-radius: var(--radius-xs);
+  color: var(--on-error);
+  font-size: var(--font-xs);
 }

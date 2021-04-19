@@ -1,44 +1,36 @@
 import { useReducer, useCallback, Reducer, useEffect } from 'react';
 import { initialState, IState, reducer } from './reducer';
 import { IState as IAppState } from './../AppProvider/reducer';
-import { intervalToDuration } from 'date-fns';
+import { format, getTime, intervalToDuration } from 'date-fns';
 import { createContainer } from 'react-tracked';
-
-const getFilter = (currentDate: any) => {
-  const date = {
-    year: currentDate.getFullYear(),
-    month: currentDate.getMonth(),
-    day: currentDate.getDate(),
-  };
-
-  const startDay = new Date(date.year, date.month, 1, 0, 0, 0);
-  const endDay = new Date(date.year, date.month + 1, 0, 0, 0, 0);
-
-  const parse = (date: any, dateToParse: any) => {
-    const result = `${date.year}-${
-      dateToParse.getMonth() < 10
-        ? '0' + (dateToParse.getMonth() + 1)
-        : dateToParse.getMonth()
-    }-${
-      dateToParse.getDate() < 10
-        ? '0' + dateToParse.getDate()
-        : dateToParse.getDate()
-    }`;
-
-    return result;
-  };
-
-  const filter = encodeURI(
-    `?timeMin=${parse(date, startDay)}T00:01:00Z&timeMax=${parse(
-      date,
-      endDay
-    )}T23:59:00Z`
-  );
-
-  return filter;
-};
+import * as Service from './service';
+import { ICalendar } from '../../models/calendar';
+import { IEvent } from '../../models/event';
 
 type IAction = { type: string; payload: any | boolean | string };
+
+const eventListManipulator = (items: IEvent[]) => {
+  let day = 0;
+  const clone = [...items];
+  clone.map((i: IEvent, index: number) => {
+    let currentDay = Number.parseInt(format(new Date(i.start.dateTime), 'dd'));
+    if (currentDay > day) {
+      i.divider = day !== 0 ? true : false;
+      day = currentDay;
+    } else {
+      i.divider = false;
+    }
+    i.selected = false;
+    return i;
+  });
+
+  clone.sort((a, b) => {
+    return (
+      getTime(new Date(a.start.dateTime)) - getTime(new Date(b.start.dateTime))
+    );
+  });
+  return clone;
+};
 
 const useValue: any = () =>
   useReducer<Reducer<IState, IAction>>(reducer, initialState);
@@ -49,8 +41,6 @@ export const {
   useUpdate: useEventListDispatch,
 } = createContainer<IState, any, any>(useValue);
 
-const API_URL = 'https://www.googleapis.com/calendar/v3/';
-
 export const useEventListActions = (appState: IAppState) => {
   const state = useEventListState();
   const dispatch = useEventListDispatch();
@@ -58,22 +48,16 @@ export const useEventListActions = (appState: IAppState) => {
   const list = useCallback(async () => {
     dispatch({ type: 'LOADING' });
     try {
-      const filter = getFilter(state.currentDate);
-      const orderBy = '&orderBy=startTime';
-      const singleEvents = '&singleEvents=true';
-      const query = `${filter}${singleEvents}${orderBy}`;
-      const url = `${API_URL}calendars/${state.calendarId}/events${query}`;
-      const res: Response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${appState.token}`,
-        },
+      const res = await Service.list(
+        appState.token,
+        state.calendarId,
+        state.currentDate
+      );
+
+      dispatch({
+        type: 'RESPONSE',
+        payload: eventListManipulator(res!),
       });
-      if (res.status === 200) {
-        const { items } = await res.json();
-        dispatch({ type: 'RESPONSE', payload: items });
-      } else {
-        dispatch({ type: 'ERROR', payload: 'Error!' });
-      }
     } catch (e) {
       dispatch({ type: 'ERROR', payload: e });
     }
@@ -82,21 +66,8 @@ export const useEventListActions = (appState: IAppState) => {
   const calendarList = useCallback(async () => {
     dispatch({ type: 'LOADING_CALENDAR_LIST' });
     try {
-      const url = `${API_URL}users/me/calendarList`;
-      const res: Response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${appState.token}`,
-        },
-      });
-      if (res.status === 200) {
-        const { items } = await res.json();
-        const filtered = items.filter((item: any) => {
-          return item.summary.includes('__HOURS__');
-        });
-        dispatch({ type: 'RESPONSE_CALENDAR', payload: filtered });
-      } else {
-        dispatch({ type: 'ERROR', payload: 'Error!' });
-      }
+      const res = await Service.calendarList(appState.token);
+      dispatch({ type: 'RESPONSE_CALENDAR', payload: res });
     } catch (e) {
       dispatch({ type: 'ERROR', payload: e });
     }
@@ -106,100 +77,74 @@ export const useEventListActions = (appState: IAppState) => {
     async (id: string) => {
       dispatch({ type: 'REMOVE' });
       try {
-        const url = `${API_URL}calendars/${state.calendarId}/events/${id}`;
-        const res: Response = await fetch(url, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${appState.token}`,
-          },
-        });
-
-        if (res.status === 204) {
-          dispatch({ type: 'RESPONSE_REMOVE' });
-          await list();
-        } else {
-          dispatch({ type: 'ERROR', payload: 'Error!' });
+        const res = await Service.remove(id, appState.token, state.calendarId);
+        if (res) {
+          dispatch({
+            type: 'RESPONSE_REMOVE',
+            payload: eventListManipulator(
+              [...state.items].filter((e) => e.id !== id)
+            ),
+          });
         }
       } catch (e) {
         dispatch({ type: 'ERROR', payload: e });
       }
     },
-    [dispatch, appState.token, state.calendarId, list]
+    [dispatch, appState.token, state.items, state.calendarId]
   );
 
   const insert = useCallback(
     async (command) => {
       dispatch({ type: 'INSERT' });
       try {
-        const [d, s, e] = command.split(' ');
-        const start = new Date(
-          state.currentDate.getFullYear(),
-          state.currentDate.getMonth(),
-          d,
-          s.substring(0, 2),
-          s.substring(2)
+        const res = await Service.insert(
+          command,
+          appState.token,
+          state.currentDate,
+          state.calendarId
         );
-        const end = new Date(
-          state.currentDate.getFullYear(),
-          state.currentDate.getMonth(),
-          d,
-          e.substring(0, 2),
-          e.substring(2)
-        );
-
-        const hour =
-          intervalToDuration({ start, end }).hours +
-          ':' +
-          intervalToDuration({ start, end }).minutes;
-
-        await fetch(`${API_URL}calendars/${state.calendarId}/events`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${appState.token}`,
-          },
-          body: JSON.stringify({
-            summary: hour,
-            start: {
-              dateTime: start.toISOString(),
-              timeZone: 'Europe/Warsaw',
-            },
-            end: {
-              dateTime: end.toISOString(),
-              timeZone: 'Europe/Warsaw',
-            },
-          }),
+        const items = [...state.items, res!];
+        dispatch({
+          type: 'RESPONSE_INSERT',
+          payload: eventListManipulator(items),
         });
-        await list();
       } catch (e) {
         dispatch({ type: 'ERROR', payload: e });
       }
     },
-    [dispatch, appState.token, state.currentDate, state.calendarId, list]
+    [dispatch, appState.token, state.items, state.currentDate, state.calendarId]
   );
 
   const insertCalendar = useCallback(async () => {
     dispatch({ type: 'INSERT_CALENDAR' });
     try {
-      await fetch(`${API_URL}calendars`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${appState.token}`,
-        },
-        body: JSON.stringify({
-          summary: `__HOURS__${Date.now()}`,
-        }),
-      });
-      await calendarList();
+      const res = await Service.insertCalendar(appState.token);
       dispatch({ type: 'RESPONSE_INSERT_CALENDAR' });
     } catch (e) {
       dispatch({ type: 'ERROR', payload: e });
     }
-  }, [dispatch, appState.token, calendarList]);
+  }, [dispatch, appState.token]);
 
   const setCalendarId = (id: string) => {
     localStorage.setItem('calendarId', id);
     dispatch({ type: 'SET_CALENDAR_ID', payload: id });
   };
+
+  const hasCalendar = useCallback(async () => {
+    dispatch({ type: 'HAS_CALENDAR' });
+    try {
+      const res: ICalendar[] = (await Service.calendarList(
+        appState.token
+      )) as ICalendar[];
+      if (res && res.length) {
+        dispatch({ type: 'RESPONSE_HAS_CALENDAR', payload: [] });
+      } else {
+        dispatch({ type: 'ERROR', payload: 'Error!' });
+      }
+    } catch (e) {
+      dispatch({ type: 'ERROR', payload: e });
+    }
+  }, [dispatch, appState.token]);
 
   const nextMonth = useCallback(() => {
     const newDate = new Date(state.currentDate);

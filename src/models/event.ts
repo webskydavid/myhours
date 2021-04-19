@@ -14,6 +14,8 @@ export interface IEvent {
   sequence: number;
   reminders: IReminders;
   eventType: string;
+  selected?: boolean;
+  divider?: boolean;
 }
 export interface ICreator {
   email: string;

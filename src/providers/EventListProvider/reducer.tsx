@@ -1,9 +1,10 @@
+import { IEvent } from '../../models/event';
 import { logger } from '../logger';
 
 export interface IState {
   loading: boolean;
   error: Error | null;
-  items: any[];
+  items: IEvent[];
   calendarList: any[];
   currentDate: Date;
   month: number;
@@ -43,11 +44,11 @@ export const reducer = (state: IState, action: IReducer): IState => {
     case 'REMOVE':
       return { ...state, loading: true };
     case 'RESPONSE_REMOVE':
-      return { ...state, loading: false };
+      return { ...state, loading: false, items: payload };
     case 'INSERT':
       return { ...state, loading: true };
     case 'RESPONSE_INSERT':
-      return { ...state, loading: false };
+      return { ...state, loading: false, items: payload };
     case 'INSERT_CALENDAR':
       return { ...state, loading: true };
     case 'RESPONSE_INSERT_CALENDAR':
