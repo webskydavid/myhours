@@ -65,7 +65,7 @@ const List: FC = () => {
           {showErnings ? (
             <div>
               {items.length
-                ? `Total erning: ${totalErnings} ${currency}`
+                ? `Total net erning: ${totalErnings} ${currency}`
                 : `0.00 ${currency}`}
             </div>
           ) : null}

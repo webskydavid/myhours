@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 interface Props {
   value: any;
@@ -9,7 +9,6 @@ interface Props {
 }
 
 const SettingsField: FC<Props> = ({ label, onChange, ...props }) => {
-  const value = String(props.value);
   const handleChange = (e: any) => {
     const { target } = e;
     if (props.type === 'checkbox') {
@@ -18,15 +17,11 @@ const SettingsField: FC<Props> = ({ label, onChange, ...props }) => {
       onChange(target.value);
     }
   };
+
   return (
     <>
       <label htmlFor={props.name}>{label}</label>
-      <input
-        {...props}
-        value={value}
-        checked={props.value || true}
-        onChange={handleChange}
-      />
+      <input {...props} checked={props.value} onChange={handleChange} />
     </>
   );
 };
