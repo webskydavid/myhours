@@ -1,4 +1,3 @@
-import { differenceInMinutes } from 'date-fns';
 import { useAtom } from 'jotai';
 import { FC, useEffect } from 'react';
 import { useHistory } from 'react-router';
@@ -61,15 +60,16 @@ const List: FC = () => {
               })
             : 'No hours!'}
         </div>
-        <div>{items.length ? `Total hours: ${totalHours}` : '0.00h'}</div>
-        {showErnings ? (
-          <div>
-            {items.length
-              ? `Total erning: ${totalErnings} ${currency}`
-              : `0.00 ${currency}`}
-          </div>
-        ) : null}
-
+        <div className={classes.footer}>
+          <div>{items.length ? `Total hours: ${totalHours}` : '0.00h'}</div>
+          {showErnings ? (
+            <div>
+              {items.length
+                ? `Total erning: ${totalErnings} ${currency}`
+                : `0.00 ${currency}`}
+            </div>
+          ) : null}
+        </div>
         <EventForm handleInsert={handleInsert} />
       </>
     </div>

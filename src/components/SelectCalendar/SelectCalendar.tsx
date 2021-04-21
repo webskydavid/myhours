@@ -1,25 +1,13 @@
 import { useAtom } from 'jotai';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import {
-  calendarIdAtom,
   calendarListAtom,
   getCalendarListAtom,
   insertCalendarAtom,
   setCalendarIdAtom,
   statusAtom,
 } from '../../atoms/calendar';
-
-const useLocalStorage = () => {
-  const [id, setId] = useState<string | null>();
-  const KEY = 'calendarId';
-
-  useEffect(() => {
-    setId(localStorage.getItem(KEY));
-  }, []);
-
-  return { id };
-};
 
 const SelectCalendar: FC = () => {
   const [status] = useAtom(statusAtom);

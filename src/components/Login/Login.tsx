@@ -13,6 +13,7 @@ const Login: FC = () => {
   const history = useHistory();
   return (
     <div className={classes.root}>
+      <h4>My Hours</h4>
       {!state.isAuthenticated ? (
         <GoogleLogin
           isSignedIn

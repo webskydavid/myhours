@@ -6,17 +6,18 @@ import { AiFillCalendar } from 'react-icons/ai';
 import { HiTemplate, HiTerminal } from 'react-icons/hi';
 import { useAtom } from 'jotai';
 import { signOutAtom, userAtom } from '../../atoms/user';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const Header: FC = () => {
   const [state] = useAtom(userAtom);
   const [, signOut] = useAtom(signOutAtom);
   const history = useHistory();
+  const { pathname } = useLocation();
 
-  return (
+  return state.isAuthenticated ? (
     <div className={classes.root}>
       <div
-        className={classes.action}
+        className={pathname === '/' ? classes.actionActive : classes.action}
         onClick={() => {
           history.push('/');
         }}
@@ -25,7 +26,9 @@ const Header: FC = () => {
         <span>Hours</span>
       </div>
       <div
-        className={classes.action}
+        className={
+          pathname === '/select' ? classes.actionActive : classes.action
+        }
         onClick={() => {
           history.push('/select');
         }}
@@ -34,7 +37,9 @@ const Header: FC = () => {
         <span>Calendars</span>
       </div>
       <div
-        className={classes.action}
+        className={
+          pathname === '/settings' ? classes.actionActive : classes.action
+        }
         onClick={() => {
           history.push('/settings');
         }}
@@ -42,29 +47,28 @@ const Header: FC = () => {
         <HiTemplate />
         <span>Settings</span>
       </div>
-      {state.isAuthenticated ? (
-        <GoogleLogout
-          clientId='140151512167-vkvlkuo7qvpbfgvlvm7u675so24gp6a0.apps.googleusercontent.com'
-          buttonText='Logout'
-          onLogoutSuccess={() => {
-            signOut();
-            history.push('/login');
-          }}
-          onFailure={() => {
-            console.log('Error');
-          }}
-          render={({ onClick }) => {
-            return (
-              <div className={classes.action} onClick={onClick}>
-                <RiLogoutBoxRFill />
-                <span>Logout</span>
-              </div>
-            );
-          }}
-        />
-      ) : null}
+
+      <GoogleLogout
+        clientId='140151512167-vkvlkuo7qvpbfgvlvm7u675so24gp6a0.apps.googleusercontent.com'
+        buttonText='Logout'
+        onLogoutSuccess={() => {
+          signOut();
+          history.push('/login');
+        }}
+        onFailure={() => {
+          console.log('Error');
+        }}
+        render={({ onClick }) => {
+          return (
+            <div className={classes.action} onClick={onClick}>
+              <RiLogoutBoxRFill />
+              <span>Logout</span>
+            </div>
+          );
+        }}
+      />
     </div>
-  );
+  ) : null;
 };
 
 export default Header;

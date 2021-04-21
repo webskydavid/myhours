@@ -3,7 +3,6 @@ import { userAtom } from './user';
 import * as Service from './../services/service';
 import { ICalendar } from '../models/calendar';
 import { currentDateAtom } from './app';
-import { getEventListAtom } from './event';
 
 // ATOMS
 export const statusAtom = atom<'IDLE' | 'BUSY'>('IDLE');

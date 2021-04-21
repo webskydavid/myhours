@@ -1,2 +1,6 @@
 .root {
 }
+
+.footer {
+  margin-top: var(--spacing-lg);
+}

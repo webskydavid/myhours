@@ -1,7 +1,11 @@
 .root {
-  display: flex;
+  display: grid;
+  grid-auto-flow: row;
   justify-content: center;
-  margin-top: 150px;
+  padding-top: 150px;
+  align-items: center;
+  text-align: center;
+  gap: 32px;
 }
 
 .button {
