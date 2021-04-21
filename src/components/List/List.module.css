@@ -1,4 +1,6 @@
 .root {
+  padding: var(--spacing-xs) var(--spacing-xs);
+  overflow: scroll;
 }
 
 .footer {

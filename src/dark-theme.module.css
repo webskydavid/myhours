@@ -21,10 +21,12 @@
   --radius-xs: 4px;
 
   background: var(--background);
-  height: 100%;
-  padding: 0 var(--spacing-xs);
-
   font-family: 'Roboto Mono', monospace;
   font-size: var(--font-md);
   color: var(--secondary);
+
+  overflow: scroll;
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
 }

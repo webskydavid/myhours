@@ -31,7 +31,7 @@ const List: FC = () => {
   const [showErnings] = useAtom(showErningsAtom);
   const [currency] = useAtom(currencyAtom);
   const [, getEventList] = useAtom(getEventListAtom);
-  const [, insertAtom] = useAtom(insertEventAtom);
+
   const history = useHistory();
 
   useEffect(() => {
@@ -43,10 +43,6 @@ const List: FC = () => {
   useEffect(() => {
     getEventList();
   }, [getEventList, currentDate]);
-
-  const handleInsert = (values: any) => {
-    insertAtom(values.command);
-  };
 
   return (
     <div className={classes.root}>
@@ -70,7 +66,6 @@ const List: FC = () => {
             </div>
           ) : null}
         </div>
-        <EventForm handleInsert={handleInsert} />
       </>
     </div>
   );

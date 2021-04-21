@@ -35,17 +35,20 @@ export const getCalendarListAtom = atom(null, (get, set) => {
 });
 
 export const insertCalendarAtom = atom(null, (get, set) => {
+  const list = get(calendarListAtom);
   set(statusAtom, 'BUSY');
   const run = async () => {
     try {
       const { token } = get(userAtom);
-      await Service.insertCalendar(token);
+      const res = (await Service.insertCalendar(token)) as ICalendar;
+      const newList = [...list, res];
+      set(calendarListAtom, newList);
+      set(statusAtom, 'IDLE');
     } catch (e) {
       set(errorAtom, e);
       set(statusAtom, 'IDLE');
     }
   };
-  set(statusAtom, 'IDLE');
   run();
 });
 

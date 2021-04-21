@@ -11,6 +11,7 @@ import './styles.module.css';
 import { Provider } from 'jotai';
 import Header from './components/Header/Header';
 import Settings from './components/Settings/Settings';
+import EventForm from './components/EventForm/EventForm';
 
 export default function App() {
   const [theme] = useState(true);
@@ -32,6 +33,7 @@ export default function App() {
               <List />
             </AuthRoute>
           </Switch>
+          <EventForm />
         </Router>
       </Provider>
     </div>

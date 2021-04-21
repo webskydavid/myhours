@@ -178,7 +178,7 @@ export const calendarList = async (
     if (res.status === 200) {
       const { items } = await res.json();
       // FIX: Issue with missing calendars
-      const filtered = items.filter((item: any) => {
+      const filtered: ICalendar[] = items.filter((item: any) => {
         return item.summary.startsWith('__HOURS__');
       });
       return filtered;

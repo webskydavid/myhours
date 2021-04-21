@@ -31,7 +31,7 @@ const SelectCalendar: FC = () => {
   }, []);
 
   return (
-    <>
+    <div>
       <h4>Select one calendar:</h4>
       <div>
         {status === 'IDLE'
@@ -57,7 +57,7 @@ const SelectCalendar: FC = () => {
           Add calendar
         </button>
       </>
-    </>
+    </div>
   );
 };
 

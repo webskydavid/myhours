@@ -4,15 +4,22 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useAtom } from 'jotai';
 import { currentDateAtom } from '../../atoms/app';
 import classes from './EventForm.module.css';
+import { insertEventAtom } from '../../atoms/event';
+import { userAtom } from '../../atoms/user';
+import { useLocation } from 'react-router';
 
-interface Props {
-  handleInsert: (values: any) => void;
-}
-
-const EventForm: FC<Props> = ({ handleInsert }) => {
+const EventForm: FC = () => {
+  const [user] = useAtom(userAtom);
   const [currentDate] = useAtom(currentDateAtom);
+  const [, insertAtom] = useAtom(insertEventAtom);
 
-  return (
+  const location = useLocation();
+
+  const handleInsert = (values: any) => {
+    insertAtom(values.command);
+  };
+
+  return user.isAuthenticated && location.pathname === '/' ? (
     <div className={classes.root}>
       <Formik
         initialValues={{
@@ -62,7 +69,7 @@ const EventForm: FC<Props> = ({ handleInsert }) => {
         </Form>
       </Formik>
     </div>
-  );
+  ) : null;
 };
 
 export default EventForm;

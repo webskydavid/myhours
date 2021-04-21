@@ -1,15 +1,25 @@
 Bugs:
     ☐ Command validation. No support for values like 900 -> 9:00. Command not run if using 900 hour.
+    ☐ No margin in calendar view
+    
 
 Feature:
     ☐ Improve command for adding new hours
     ☐ Improve adding and selecting hours calendars
-    ☐ Allow to have multiple calendars
+    ✔ Allow to have multiple calendars @done(21-04-22 00:19)
     ☐ Allow to add placeholders
     ☐ Background insert and delete for events
-    ☐ Show numeric keyboard on mobile
-    
+    ✔ Show numeric keyboard on mobile @done(21-04-22 00:19)
+    ☐ Allow edit hours
+    ☐ Sticky totals
+    ☐ Progress indicator for adding calendar and other pages
+    ☐ Allow to change theme (create light theme)
+    ☐ Allow to filter list
+    ☐ Allow to sort list
+    ☐ Show statistics
+    ☐ Allow to set name for calendars
+    ☐ Allow to remove calendars
+
 Refactor:
-    ☐ Contexts
-    ☐ Components
+   ✔ Added jotai as state management @done(21-04-22 00:23)
     
