@@ -3,7 +3,7 @@ import classes from './Header.module.css';
 import { GoogleLogout } from 'react-google-login';
 import { RiLogoutBoxRFill } from 'react-icons/ri';
 import { AiFillCalendar } from 'react-icons/ai';
-import { HiTemplate } from 'react-icons/hi';
+import { HiTemplate, HiTerminal } from 'react-icons/hi';
 import { useAtom } from 'jotai';
 import { signOutAtom, userAtom } from '../../atoms/user';
 import { useHistory } from 'react-router-dom';
@@ -18,15 +18,29 @@ const Header: FC = () => {
       <div
         className={classes.action}
         onClick={() => {
+          history.push('/');
+        }}
+      >
+        <HiTerminal />
+        <span>Hours</span>
+      </div>
+      <div
+        className={classes.action}
+        onClick={() => {
           history.push('/select');
         }}
       >
         <AiFillCalendar />
         <span>Calendars</span>
       </div>
-      <div className={classes.action}>
+      <div
+        className={classes.action}
+        onClick={() => {
+          history.push('/settings');
+        }}
+      >
         <HiTemplate />
-        <span>Theme</span>
+        <span>Settings</span>
       </div>
       {state.isAuthenticated ? (
         <GoogleLogout

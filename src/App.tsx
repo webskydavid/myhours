@@ -10,6 +10,7 @@ import './styles.module.css';
 
 import { Provider } from 'jotai';
 import Header from './components/Header/Header';
+import Settings from './components/Settings/Settings';
 
 export default function App() {
   const [theme] = useState(true);
@@ -20,6 +21,9 @@ export default function App() {
           <Header />
           <Switch>
             <Route path='/login' component={Login} />
+            <AuthRoute path='/settings'>
+              <Settings />
+            </AuthRoute>
             <AuthRoute path='/select'>
               <SelectCalendar />
             </AuthRoute>

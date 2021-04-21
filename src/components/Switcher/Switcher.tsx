@@ -12,11 +12,11 @@ const Switcher: FC = () => {
 
   return (
     <div className={classes.root}>
-      <button onClick={prevMonth}>
+      <button className={classes.switch} onClick={prevMonth}>
         {format(subMonths(currentDate, 1), 'MMMM')}
       </button>
       <span>{format(currentDate, 'MMMM yyyy')}</span>
-      <button onClick={nextMonth}>
+      <button className={classes.switch} onClick={nextMonth}>
         {format(addMonths(currentDate, 1), 'MMMM')}
       </button>
     </div>

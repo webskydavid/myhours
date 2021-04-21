@@ -1,0 +1,35 @@
+.root {
+}
+
+.head {
+  margin-bottom: var(--spacing-md);
+}
+
+.field {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  grid-template-columns: 1fr 0.5fr;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  align-items: center;
+}
+
+.field > input,
+.field > input:hover,
+.field > input:active,
+.field > input:focus {
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  font-size: var(--font-lg);
+  background-color: rgb(58, 64, 68);
+  color: var(--secondary);
+  outline: none;
+  width: 100%;
+  min-height: 35px;
+}
+
+.field > input[type='checkbox'] {
+  background-color: red;
+}

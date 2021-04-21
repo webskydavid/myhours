@@ -27,9 +27,7 @@ const Event: FC<Props> = ({ event }) => {
           setSelectedEvent((e) => ({ ...e, selected: !e.selected }));
         }}
       >
-        <div className={classes.date}>
-          {format(start, 'dd - EEEE LLLL yyyy')}
-        </div>
+        <div className={classes.date}>{format(start, 'dd - EE LL yyyy')}</div>
         <div className={classes.start}>{format(start, 'HH:mm')}</div>
         <div className={classes.end}>{format(end, 'HH:mm')}</div>
         <div className={classes.hours}>

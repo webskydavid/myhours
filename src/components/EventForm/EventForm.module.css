@@ -1,0 +1,48 @@
+.root {
+  margin-top: var(--spacing-md);
+}
+
+.terminal {
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.terminal > input,
+.terminal > input:hover,
+.terminal > input:active,
+.terminal > input:focus {
+  border: none;
+  border-radius: var(--radius-xs) 0px 0px var(--radius-xs);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  font-size: var(--font-lg);
+  background-color: rgb(58, 64, 68);
+  color: var(--secondary);
+  outline: none;
+  width: 100%;
+}
+
+.terminal > button,
+.terminal > button:focus {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 0px var(--radius-xs) var(--radius-xs) 0px;
+  background-color: var(--secondary);
+  color: var(--on-secondary);
+  font-weight: bold;
+}
+
+.terminal > button:hover {
+  background-color: rgb(31, 133, 77);
+}
+
+.error {
+  display: flex;
+  padding: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+  background: var(--error);
+  border: none;
+  border-radius: var(--radius-xs);
+  color: var(--on-error);
+  font-size: var(--font-xs);
+}

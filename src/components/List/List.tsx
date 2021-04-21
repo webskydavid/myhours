@@ -2,13 +2,19 @@ import { differenceInMinutes } from 'date-fns';
 import { useAtom } from 'jotai';
 import { FC, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import { currentDateAtom } from '../../atoms/app';
+import {
+  currencyAtom,
+  currentDateAtom,
+  showErningsAtom,
+} from '../../atoms/app';
 import { calendarIdAtom } from '../../atoms/calendar';
 import {
   eventListAtom,
   getEventListAtom,
   insertEventAtom,
   statusAtom,
+  totalErningsAtom,
+  totalHoursAtom,
 } from '../../atoms/event';
 import { IEvent } from '../../models/event';
 import Event from '../Event/Event';
@@ -21,13 +27,15 @@ const List: FC = () => {
   const [items] = useAtom(eventListAtom);
   const [currentDate] = useAtom(currentDateAtom);
   const [calendarId] = useAtom(calendarIdAtom);
+  const [totalHours] = useAtom(totalHoursAtom);
+  const [totalErnings] = useAtom(totalErningsAtom);
+  const [showErnings] = useAtom(showErningsAtom);
+  const [currency] = useAtom(currencyAtom);
   const [, getEventList] = useAtom(getEventListAtom);
   const [, insertAtom] = useAtom(insertEventAtom);
   const history = useHistory();
 
   useEffect(() => {
-    console.log(calendarId, calendarId === null, calendarId === '');
-
     if (calendarId === '') {
       history.push('/select');
     }
@@ -42,7 +50,7 @@ const List: FC = () => {
   };
 
   return (
-    <div>
+    <div className={classes.root}>
       <Switcher />
       {status === 'BUSY' ? 'Loading...' : ''}
       <>
@@ -53,21 +61,16 @@ const List: FC = () => {
               })
             : 'No hours!'}
         </div>
-        <div>
-          {items.length
-            ? 'Total hours: ' +
-              (
-                items.reduce((prev, val) => {
-                  const start = new Date(val.start.dateTime);
-                  const end = new Date(val.end.dateTime);
-                  return prev + differenceInMinutes(end, start);
-                }, 0) / 60
-              ).toFixed(2)
-            : '0.00h'}
-        </div>
-        <div className={classes.terminalContainer}>
-          <EventForm classes={classes} handleInsert={handleInsert} />
-        </div>
+        <div>{items.length ? `Total hours: ${totalHours}` : '0.00h'}</div>
+        {showErnings ? (
+          <div>
+            {items.length
+              ? `Total erning: ${totalErnings} ${currency}`
+              : `0.00 ${currency}`}
+          </div>
+        ) : null}
+
+        <EventForm handleInsert={handleInsert} />
       </>
     </div>
   );

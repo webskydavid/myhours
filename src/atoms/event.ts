@@ -1,7 +1,7 @@
-import { format, getTime } from 'date-fns';
+import { differenceInMinutes, format, getTime } from 'date-fns';
 import { atom } from 'jotai';
 import { IEvent } from '../models/event';
-import { currentDateAtom } from './app';
+import { currentDateAtom, netPricePerHAtom, vatAtom } from './app';
 import { calendarIdAtom } from './calendar';
 import { userAtom } from './user';
 import * as Service from './../services/service';
@@ -29,10 +29,31 @@ const eventListManipulator = (items: IEvent[]) => {
   return clone;
 };
 
+function setTotalHours(get: any, set: any, res: IEvent[] | undefined) {
+  const vat = get(vatAtom);
+  const netPricePerH = get(netPricePerHAtom);
+  const total = (
+    res!.reduce((prev, val) => {
+      const start = new Date(val.start.dateTime);
+      const end = new Date(val.end.dateTime);
+      return prev + differenceInMinutes(end, start);
+    }, 0) / 60
+  ).toFixed(2);
+  set(totalHoursAtom, total);
+  set(
+    totalErningsAtom,
+    (Number.parseFloat(total) *
+      Number.parseFloat(netPricePerH) *
+      Number.parseFloat(vat)) /
+      100
+  );
+}
+
 export const statusAtom = atom<'IDLE' | 'BUSY'>('IDLE');
 export const errorAtom = atom<string | null>(null);
-
 export const eventListAtom = atom<IEvent[]>([]);
+export const totalHoursAtom = atom<string>('0');
+export const totalErningsAtom = atom<string>('0');
 
 export const getEventListAtom = atom(null, (get, set) => {
   set(statusAtom, 'BUSY');
@@ -40,11 +61,11 @@ export const getEventListAtom = atom(null, (get, set) => {
   const currentDate = get(currentDateAtom);
   const calendarId = get(calendarIdAtom);
 
-  console.log(currentDate);
-
   const run = async () => {
     try {
       const res = await Service.list(token, calendarId!, currentDate);
+
+      setTotalHours(get, set, res);
       set(eventListAtom, eventListManipulator(res!));
       set(statusAtom, 'IDLE');
     } catch (e) {
@@ -65,11 +86,10 @@ export const removeEventAtom = atom(null, (get, set, id: string) => {
     try {
       const res = await Service.remove(id, token, calendarId!);
       if (res) {
+        const newItems = [...items].filter((e) => e.id !== id);
+        setTotalHours(get, set, newItems);
+        set(eventListAtom, eventListManipulator(newItems));
         set(statusAtom, 'IDLE');
-        set(
-          eventListAtom,
-          eventListManipulator([...items].filter((e) => e.id !== id))
-        );
       }
     } catch (e) {
       set(errorAtom, e);
@@ -80,8 +100,6 @@ export const removeEventAtom = atom(null, (get, set, id: string) => {
 });
 
 export const insertEventAtom = atom(null, (get, set, command: string) => {
-  console.log(command);
-
   set(statusAtom, 'BUSY');
   const items = get(eventListAtom);
   const { token } = get(userAtom);
@@ -97,8 +115,9 @@ export const insertEventAtom = atom(null, (get, set, command: string) => {
         calendarId!
       );
       const newItems = [...items, res!];
-      set(statusAtom, 'IDLE');
+      setTotalHours(get, set, newItems);
       set(eventListAtom, eventListManipulator(newItems));
+      set(statusAtom, 'IDLE');
     } catch (e) {
       set(errorAtom, e);
       set(statusAtom, 'IDLE');
