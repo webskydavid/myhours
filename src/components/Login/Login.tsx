@@ -1,12 +1,15 @@
-import React, { FC } from 'react';
+import { useAtom } from 'jotai';
+import { FC } from 'react';
 import GoogleLogin from 'react-google-login';
 import { useHistory } from 'react-router';
-import { useActions, useAppState } from '../../providers/AppProvider/provider';
+import { signInAtom, signInFailureAtom, userAtom } from '../../atoms/user';
 import classes from './Login.module.css';
 
 const Login: FC = () => {
-  const state = useAppState();
-  const { login, loginFailure } = useActions();
+  const [state] = useAtom(userAtom);
+  const [, signIn] = useAtom(signInAtom);
+  const [, signInFailure] = useAtom(signInFailureAtom);
+
   const history = useHistory();
   return (
     <div className={classes.root}>
@@ -17,12 +20,12 @@ const Login: FC = () => {
           buttonText='Login'
           onSuccess={(u: any): void => {
             if (u) {
-              login(u.tokenObj);
+              signIn(u.tokenObj);
               history.push('/select');
             }
           }}
           onFailure={(e) => {
-            loginFailure();
+            signInFailure();
           }}
           render={({ onClick }) => {
             return (

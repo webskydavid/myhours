@@ -1,7 +1,8 @@
-import React, { FC, ReactNode } from 'react';
-import { Redirect, useHistory, useLocation } from 'react-router';
-import { Route, Link } from 'react-router-dom';
-import { useAppState } from '../providers/AppProvider/provider';
+import { useAtom } from 'jotai';
+import { FC } from 'react';
+import { Redirect } from 'react-router';
+import { Route } from 'react-router-dom';
+import { userAtom } from '../atoms/user';
 
 interface Props {
   path: string;
@@ -9,8 +10,7 @@ interface Props {
 }
 
 const AuthRoute: FC<Props> = ({ path, children }) => {
-  const { isAuthenticated } = useAppState();
-  console.log(isAuthenticated);
+  const [{ isAuthenticated }] = useAtom(userAtom);
 
   return (
     <Route

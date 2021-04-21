@@ -1,6 +1,6 @@
-import { differenceInMinutes, intervalToDuration } from 'date-fns';
-import { ICalendar } from '../../models/calendar';
-import { IEvent } from '../../models/event';
+import { differenceInMinutes } from 'date-fns';
+import { ICalendar } from '../models/calendar';
+import { IEvent } from '../models/event';
 
 const API_URL = 'https://www.googleapis.com/calendar/v3/';
 

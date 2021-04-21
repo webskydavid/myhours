@@ -1,65 +1,44 @@
-import { differenceInMinutes, format } from 'date-fns';
-import { FC, useEffect, useState } from 'react';
+import { differenceInMinutes } from 'date-fns';
+import { useAtom } from 'jotai';
+import { FC, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import { IEvent } from '../../models/event';
-import { useAppState } from '../../providers/AppProvider/provider';
+import { currentDateAtom } from '../../atoms/app';
 import {
-  useEventListActions,
-  useEventListState,
-} from '../../providers/EventListProvider/provider';
+  eventListAtom,
+  getEventListAtom,
+  insertEventAtom,
+  statusAtom,
+} from '../../atoms/event';
+import { IEvent } from '../../models/event';
 import Event from '../Event/Event';
 import EventForm from '../EventForm/EventForm';
 import Switcher from '../Switcher/Switcher';
 import classes from './List.module.css';
 
 const List: FC = () => {
-  const appState = useAppState();
-  const eventListState = useEventListState();
-  const eventListActions = useEventListActions(appState);
-  const { loading, items, currentDate, calendarId } = eventListState;
-  const { insert, remove, list } = eventListActions;
-
-  const history = useHistory();
+  const [status] = useAtom(statusAtom);
+  const [items] = useAtom(eventListAtom);
+  const [currentDate] = useAtom(currentDateAtom);
+  const [, getEventList] = useAtom(getEventListAtom);
+  const [, insertAtom] = useAtom(insertEventAtom);
 
   useEffect(() => {
-    if (!appState.isAuthenticated) {
-      history.push('/login');
-    }
-  }, [appState.isAuthenticated, history]);
-
-  useEffect(() => {
-    if (appState.isAuthenticated) {
-      list();
-    }
-  }, [list, appState.isAuthenticated, calendarId]);
+    getEventList();
+  }, [getEventList, currentDate]);
 
   const handleInsert = (values: any) => {
-    insert(values.command);
+    insertAtom(values.command);
   };
-
-  const handleRemove = (id: string) => {
-    remove(id);
-  };
-
-  const handleEdit = (event: any) => {};
 
   return (
     <div>
       <Switcher />
-      {loading ? 'Loading...' : ''}
+      {status === 'BUSY' ? 'Loading...' : ''}
       <>
         <div className={classes.list}>
           {!!items.length
             ? items.map((event: IEvent, index: number) => {
-                return (
-                  <Event
-                    key={event.id}
-                    event={event}
-                    index={index}
-                    onEdit={handleEdit}
-                    onRemove={handleRemove}
-                  />
-                );
+                return <Event key={event.id} event={event} index={index} />;
               })
             : 'No hours!'}
         </div>
@@ -76,11 +55,7 @@ const List: FC = () => {
             : '0.00h'}
         </div>
         <div className={classes.terminalContainer}>
-          <EventForm
-            classes={classes}
-            currentDate={currentDate}
-            handleInsert={handleInsert}
-          />
+          <EventForm classes={classes} handleInsert={handleInsert} />
         </div>
       </>
     </div>

@@ -1,21 +1,17 @@
-import {
-  differenceInHours,
-  differenceInMinutes,
-  format,
-  intervalToDuration,
-} from 'date-fns';
-import React, { FC, useState } from 'react';
+import { differenceInMinutes, format } from 'date-fns';
+import { useAtom } from 'jotai';
+import { FC, useState } from 'react';
+import { removeEventAtom } from '../../atoms/event';
 import { IEvent } from '../../models/event';
 import classes from './Event.module.css';
 
 interface Props {
   event: IEvent;
   index: number;
-  onEdit: (event: any) => void;
-  onRemove: (id: string) => void;
 }
 
-const Event: FC<Props> = ({ event, index, onEdit, onRemove }) => {
+const Event: FC<Props> = ({ event }) => {
+  const [, removeEvent] = useAtom(removeEventAtom);
   const [selectedEvent, setSelectedEvent] = useState(event);
   const start = new Date(event.start.dateTime);
   const end = new Date(event.end.dateTime);
@@ -31,14 +27,19 @@ const Event: FC<Props> = ({ event, index, onEdit, onRemove }) => {
           setSelectedEvent((e) => ({ ...e, selected: !e.selected }));
         }}
       >
-        <div className={classes.date}>{format(start, 'yyyy-MM-dd')}</div>
+        <div className={classes.date}>
+          {format(start, 'dd - EEEE LLLL yyyy')}
+        </div>
         <div className={classes.start}>{format(start, 'HH:mm')}</div>
         <div className={classes.end}>{format(end, 'HH:mm')}</div>
         <div className={classes.hours}>
           {(differenceInMinutes(end, start) / 60).toFixed(2)}h
         </div>
-        <button className={classes.action} onClick={() => onRemove(event.id)}>
-          Delete
+        <button
+          className={classes.action}
+          onClick={() => removeEvent(event.id)}
+        >
+          x
         </button>
       </div>
     </>

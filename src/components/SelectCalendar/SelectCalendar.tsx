@@ -1,11 +1,14 @@
-import { Field, Form, Formik } from 'formik';
-import React, { FC, useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { useAppState } from '../../providers/AppProvider/provider';
 import {
-  useEventListActions,
-  useEventListState,
-} from '../../providers/EventListProvider/provider';
+  calendarIdAtom,
+  calendarListAtom,
+  getCalendarListAtom,
+  insertCalendarAtom,
+  setCalendarIdAtom,
+  statusAtom,
+} from '../../atoms/calendar';
 
 const useLocalStorage = () => {
   const [id, setId] = useState<string | null>();
@@ -19,36 +22,40 @@ const useLocalStorage = () => {
 };
 
 const SelectCalendar: FC = () => {
-  const { id } = useLocalStorage();
-  const appState = useAppState();
-  const { loading, calendarList } = useEventListState();
-  const actions = useEventListActions(appState);
+  const [status] = useAtom(statusAtom);
+  const [calendarId] = useAtom(calendarIdAtom);
+  const [calendarList] = useAtom(calendarListAtom);
+  const [, getCalendarList] = useAtom(getCalendarListAtom);
+  const [, setCalendarId] = useAtom(setCalendarIdAtom);
+  const [, insertCalendar] = useAtom(insertCalendarAtom);
+
   const history = useHistory();
 
-  useEffect(() => {
-    actions.calendarList();
-  }, []);
+  const handleSetCalendarId = useCallback(
+    (id) => {
+      setCalendarId(calendarId!);
+      history.push('/');
+    },
+    [calendarId, history, setCalendarId]
+  );
 
   useEffect(() => {
-    if (id) {
-      history.push('/');
+    getCalendarList();
+    console.log(calendarId);
+
+    if (calendarId !== '') {
+      handleSetCalendarId(calendarId);
     }
-  }, [id, history]);
+  }, [getCalendarList, calendarId, handleSetCalendarId]);
 
   return (
     <>
       <h4>Select one calendar:</h4>
       <div>
-        {!loading
+        {status === 'IDLE'
           ? calendarList.map((calendar) => {
               return (
-                <div
-                  key={calendar.id}
-                  onClick={() => {
-                    console.log('select', calendar.id);
-                    actions.setCalendarId(calendar.id);
-                  }}
-                >
+                <div key={calendar.id} onClick={handleSetCalendarId}>
                   {calendar.summary}
                 </div>
               );
@@ -61,8 +68,8 @@ const SelectCalendar: FC = () => {
           <h4>No calendar found</h4>
           <button
             type='button'
-            onClick={actions.insertCalendar}
-            disabled={loading}
+            onClick={insertCalendar}
+            disabled={status === 'BUSY'}
           >
             Add calendar
           </button>

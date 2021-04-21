@@ -1,14 +1,16 @@
 import { FC } from 'react';
-import { format, getDate } from 'date-fns';
+import { getDate } from 'date-fns';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { useAtom } from 'jotai';
+import { currentDateAtom } from '../../atoms/app';
 
 interface Props {
   classes: { [key: string]: string };
   handleInsert: (values: any) => void;
-  currentDate: Date;
 }
 
-const EventForm: FC<Props> = ({ classes, handleInsert, currentDate }) => {
+const EventForm: FC<Props> = ({ classes, handleInsert }) => {
+  const [currentDate] = useAtom(currentDateAtom);
   // const command = editEvent.event
   //   ? format(new Date(editEvent.event.start.dateTime), 'dd HHmm') +
   //     ' ' +
@@ -46,7 +48,7 @@ const EventForm: FC<Props> = ({ classes, handleInsert, currentDate }) => {
                 error =
                   'Invalid value provided "14 1300 1400" <day starthour endhour>!';
               } else {
-                const [day, start, end] = command.split(' ');
+                const [day] = command.split(' ');
                 const dayNumber = Number.parseInt(day);
 
                 if (dayNumber > maxDay || dayNumber < 1) {

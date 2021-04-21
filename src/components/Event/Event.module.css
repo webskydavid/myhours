@@ -4,9 +4,12 @@
   line-height: 20px;
   display: grid;
   grid-auto-flow: row;
-  grid-template-columns: auto auto auto auto min-content;
-  grid-template-areas: 'date start end hours action';
+  grid-template-columns: auto auto auto min-content;
+  grid-template-areas:
+    'date date date date'
+    'start end hours action';
   gap: 16px;
+  row-gap: 2px;
 }
 
 .eventSelected {
@@ -20,7 +23,10 @@
 }
 
 .divider {
-  border-bottom: 2px dashed rgba(49, 218, 125, 0.301);
+  margin-block: 4px;
+  font-size: 10px;
+  height: 1px;
+  background-color: rgba(49, 218, 125, 0.164);
 }
 
 .date {
