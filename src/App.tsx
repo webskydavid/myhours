@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import List from './components/List/List';
-import Logout from './components/Logout/Logout';
 import Login from './components/Login/Login';
 import SelectCalendar from './components/SelectCalendar/SelectCalendar';
 import AuthRoute from './routes/AuthRoute';
@@ -13,7 +12,7 @@ import { Provider } from 'jotai';
 import Header from './components/Header/Header';
 
 export default function App() {
-  const [theme, setTheme] = useState(true);
+  const [theme] = useState(true);
   return (
     <div className={theme ? dark.theme : light.theme}>
       <Provider>

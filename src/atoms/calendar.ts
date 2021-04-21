@@ -9,8 +9,8 @@ import { getEventListAtom } from './event';
 export const statusAtom = atom<'IDLE' | 'BUSY'>('IDLE');
 export const errorAtom = atom<string | null>(null);
 export const calendarListAtom = atom<ICalendar[]>([]);
-export const calendarIdAtom = atom<string | null>(
-  localStorage.getItem('calendarId')
+export const calendarIdAtom = atom<string>(
+  localStorage.getItem('calendarId') || ''
 );
 export const monthAtom = atom<number>(0);
 

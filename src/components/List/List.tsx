@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import { FC, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { currentDateAtom } from '../../atoms/app';
+import { calendarIdAtom } from '../../atoms/calendar';
 import {
   eventListAtom,
   getEventListAtom,
@@ -19,8 +20,18 @@ const List: FC = () => {
   const [status] = useAtom(statusAtom);
   const [items] = useAtom(eventListAtom);
   const [currentDate] = useAtom(currentDateAtom);
+  const [calendarId] = useAtom(calendarIdAtom);
   const [, getEventList] = useAtom(getEventListAtom);
   const [, insertAtom] = useAtom(insertEventAtom);
+  const history = useHistory();
+
+  useEffect(() => {
+    console.log(calendarId, calendarId === null, calendarId === '');
+
+    if (calendarId === '') {
+      history.push('/select');
+    }
+  }, []);
 
   useEffect(() => {
     getEventList();

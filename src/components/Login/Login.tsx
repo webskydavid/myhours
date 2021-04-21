@@ -21,7 +21,7 @@ const Login: FC = () => {
           onSuccess={(u: any): void => {
             if (u) {
               signIn(u.tokenObj);
-              history.push('/select');
+              history.push('/');
             }
           }}
           onFailure={(e) => {

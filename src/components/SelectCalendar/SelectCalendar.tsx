@@ -23,7 +23,6 @@ const useLocalStorage = () => {
 
 const SelectCalendar: FC = () => {
   const [status] = useAtom(statusAtom);
-  const [calendarId] = useAtom(calendarIdAtom);
   const [calendarList] = useAtom(calendarListAtom);
   const [, getCalendarList] = useAtom(getCalendarListAtom);
   const [, setCalendarId] = useAtom(setCalendarIdAtom);
@@ -33,20 +32,15 @@ const SelectCalendar: FC = () => {
 
   const handleSetCalendarId = useCallback(
     (id) => {
-      setCalendarId(calendarId!);
+      setCalendarId(id);
       history.push('/');
     },
-    [calendarId, history, setCalendarId]
+    [history, setCalendarId]
   );
 
   useEffect(() => {
     getCalendarList();
-    console.log(calendarId);
-
-    if (calendarId !== '') {
-      handleSetCalendarId(calendarId);
-    }
-  }, [getCalendarList, calendarId, handleSetCalendarId]);
+  }, []);
 
   return (
     <>
@@ -55,7 +49,10 @@ const SelectCalendar: FC = () => {
         {status === 'IDLE'
           ? calendarList.map((calendar) => {
               return (
-                <div key={calendar.id} onClick={handleSetCalendarId}>
+                <div
+                  key={calendar.id}
+                  onClick={() => handleSetCalendarId(calendar.id)}
+                >
                   {calendar.summary}
                 </div>
               );
@@ -63,18 +60,15 @@ const SelectCalendar: FC = () => {
           : 'Progressing...'}
       </div>
 
-      {!calendarList.length ? (
-        <>
-          <h4>No calendar found</h4>
-          <button
-            type='button'
-            onClick={insertCalendar}
-            disabled={status === 'BUSY'}
-          >
-            Add calendar
-          </button>
-        </>
-      ) : null}
+      <>
+        <button
+          type='button'
+          onClick={insertCalendar}
+          disabled={status === 'BUSY'}
+        >
+          Add calendar
+        </button>
+      </>
     </>
   );
 };

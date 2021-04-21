@@ -1,4 +1,25 @@
 .root {
+  width: 100%;
   display: grid;
   grid-auto-flow: column;
+  justify-content: end;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.action {
+  display: grid;
+  grid-auto-flow: row;
+  justify-items: center;
+  padding: var(--spacing-xs);
+  gap: var(--spacing-xs);
+  cursor: pointer;
+}
+
+.action > svg {
+  font-size: 24px;
+}
+
+.action > span {
+  font-size: 10px;
 }

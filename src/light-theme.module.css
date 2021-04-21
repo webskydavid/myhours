@@ -24,7 +24,7 @@
 
   background: var(--background);
   height: 100%;
-  padding: var(--spacing-xs);
+  padding: 0 var(--spacing-xs);
 
   font-family: 'Roboto Mono', monospace;
   font-size: var(--font-md);
