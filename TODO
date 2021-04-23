@@ -1,5 +1,5 @@
 Bugs:
-    ☐ Command validation. No support for values like 900 -> 9:00. Command not run if using 900 hour.
+    ✔ Command validation. No support for values like 900 -> 9:00. Command not run if using 900 hour. @done(21-04-23 18:07)
     ✔ No margin in calendar view @done(21-04-23 17:05)
     ☐ Reset atoms when logout (store is populated)
     ✔ Add toFixed(2) on erning result @done(21-04-23 16:56)
