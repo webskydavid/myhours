@@ -9,6 +9,7 @@ import {
   setCalendarIdAtom,
   statusAtom,
 } from '../../atoms/calendar';
+import classes from './SelectCalendar.module.css';
 
 const SelectCalendar: FC = () => {
   const [status] = useAtom(statusAtom);
@@ -33,7 +34,7 @@ const SelectCalendar: FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className={classes.root}>
       {!selectedCalendar ? <h4>You have no calendar selected!</h4> : null}
       <h4>Select one calendar:</h4>
       <div>
@@ -45,6 +46,7 @@ const SelectCalendar: FC = () => {
                   onClick={() => handleSetCalendarId(calendar.id)}
                 >
                   {calendar.summary}
+                  {calendar.id === selectedCalendar ? '<- Selected' : null}
                 </div>
               );
             })

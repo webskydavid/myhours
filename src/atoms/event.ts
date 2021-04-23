@@ -42,7 +42,7 @@ function setTotalHours(get: any, set: any, res: IEvent[] | undefined) {
   set(totalHoursAtom, total);
   const sum = Number.parseFloat(total) * Number.parseFloat(netPricePerH);
   const vatPer = Number.parseFloat(vat) / 100;
-  set(totalErningsAtom, sum - sum * vatPer);
+  set(totalErningsAtom, (sum - sum * vatPer).toFixed(2));
 }
 
 export const statusAtom = atom<'IDLE' | 'BUSY'>('IDLE');

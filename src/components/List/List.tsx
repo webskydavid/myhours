@@ -10,14 +10,12 @@ import { calendarIdAtom } from '../../atoms/calendar';
 import {
   eventListAtom,
   getEventListAtom,
-  insertEventAtom,
   statusAtom,
   totalErningsAtom,
   totalHoursAtom,
 } from '../../atoms/event';
 import { IEvent } from '../../models/event';
 import Event from '../Event/Event';
-import EventForm from '../EventForm/EventForm';
 import Switcher from '../Switcher/Switcher';
 import classes from './List.module.css';
 

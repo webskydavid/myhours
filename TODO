@@ -1,7 +1,8 @@
 Bugs:
     ☐ Command validation. No support for values like 900 -> 9:00. Command not run if using 900 hour.
-    ☐ No margin in calendar view
+    ✔ No margin in calendar view @done(21-04-23 17:05)
     ☐ Reset atoms when logout (store is populated)
+    ✔ Add toFixed(2) on erning result @done(21-04-23 16:56)
     
 Feature:
     ☐ Improve command for adding new hours
@@ -20,6 +21,9 @@ Feature:
     ☐ Allow to set name for calendars
     ☐ Allow to remove calendars
     ☐ Show actually selected calendar
+    ☐ Allow to add multiple hours at once
+        14 900 1000 1100 1200
+    ☐ Add auto space when typing hours in input
 
 Refactor:
    ✔ Added jotai as state management @done(21-04-22 00:23)
