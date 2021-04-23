@@ -1,13 +1,5 @@
 import { FC } from 'react';
-import {
-  differenceInHours,
-  format,
-  formatDistance,
-  getDate,
-  isAfter,
-  isBefore,
-  isValid,
-} from 'date-fns';
+import { format, getDate, isAfter, isValid } from 'date-fns';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useAtom } from 'jotai';
 import { currentDateAtom } from '../../atoms/app';
@@ -33,7 +25,7 @@ const EventForm: FC = () => {
   const location = useLocation();
 
   const handleInsert = (values: any) => {
-    console.log(command);
+    console.log(values);
 
     if (command) {
       update({ id: selected?.id, command: values.command });
@@ -50,8 +42,8 @@ const EventForm: FC = () => {
         }}
         enableReinitialize={true}
         onSubmit={(values, { resetForm }) => {
-          //resetForm();
-          //return handleInsert(values);
+          resetForm();
+          return handleInsert(values);
         }}
       >
         <Form>

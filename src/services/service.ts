@@ -101,15 +101,15 @@ export const insert = async (
       currentDate.getFullYear(),
       currentDate.getMonth(),
       Number.parseInt(d),
-      Number.parseInt(s.substring(0, 2)),
-      Number.parseInt(s.substring(2))
+      Number.parseInt(s.slice(-4, s.length / 2)),
+      Number.parseInt(s.slice(-2))
     );
     const end = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
       Number.parseInt(d),
-      Number.parseInt(e.substring(0, 2)),
-      Number.parseInt(e.substring(2))
+      Number.parseInt(e.slice(-4, e.length / 2)),
+      Number.parseInt(e.slice(-2))
     );
 
     const res: Response = await fetch(
@@ -154,15 +154,15 @@ export const update = async (
       currentDate.getFullYear(),
       currentDate.getMonth(),
       Number.parseInt(d),
-      Number.parseInt(s.substring(0, 2)),
-      Number.parseInt(s.substring(2))
+      Number.parseInt(s.slice(-4, s.length / 2)),
+      Number.parseInt(s.slice(-2))
     );
     const end = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
       Number.parseInt(d),
-      Number.parseInt(e.substring(0, 2)),
-      Number.parseInt(e.substring(2))
+      Number.parseInt(e.slice(-4, e.length / 2)),
+      Number.parseInt(e.slice(-2))
     );
 
     const res: Response = await fetch(

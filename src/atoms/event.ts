@@ -1,4 +1,4 @@
-import { differenceInMinutes, format, getTime } from 'date-fns';
+import { compareAsc, differenceInMinutes, format, getTime } from 'date-fns';
 import { atom } from 'jotai';
 import { IEvent } from '../models/event';
 import { currentDateAtom, netPricePerHAtom, vatAtom } from './app';
@@ -22,9 +22,7 @@ const eventListManipulator = (items: IEvent[]) => {
   });
 
   clone.sort((a, b) => {
-    return (
-      getTime(new Date(a.start.dateTime)) - getTime(new Date(b.start.dateTime))
-    );
+    return compareAsc(new Date(a.start.dateTime), new Date(b.start.dateTime));
   });
   return clone;
 };
