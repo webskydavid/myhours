@@ -5,7 +5,7 @@ Bugs:
     ✔ Add toFixed(2) on erning result @done(21-04-23 16:56)
     
 Feature:
-    ☐ Improve command for adding new hours
+    ✔ Improve command for adding new hours @done(21-04-23 20:29)
     ☐ Improve adding and selecting hours calendars
     ✔ Allow to have multiple calendars @done(21-04-22 00:19)
     ☐ Allow to add placeholders
@@ -20,7 +20,7 @@ Feature:
     ☐ Show statistics
     ☐ Allow to set name for calendars
     ☐ Allow to remove calendars
-    ☐ Show actually selected calendar
+    ✔ Show actually selected calendar @done(21-04-23 20:29)
     ☐ Allow to add multiple hours at once
         14 900 1000 1100 1200
     ☐ Add auto space when typing hours in input
