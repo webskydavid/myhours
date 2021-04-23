@@ -50,6 +50,20 @@ export const errorAtom = atom<string | null>(null);
 export const eventListAtom = atom<IEvent[]>([]);
 export const totalHoursAtom = atom<string>('0');
 export const totalErningsAtom = atom<string>('0');
+export const selectedEventAtom = atom<IEvent | null>(null);
+
+export const getCommandAtom = atom<string | null>((get) => {
+  const event = get(selectedEventAtom);
+  if (!event) {
+    return null;
+  }
+
+  const day = format(new Date(event?.start?.dateTime!), 'dd');
+  const start = format(new Date(event?.start?.dateTime!), 'HHmm');
+  const end = format(new Date(event?.end?.dateTime!), 'HHmm');
+
+  return `${day} ${start} ${end}`;
+});
 
 export const getEventListAtom = atom(null, (get, set) => {
   set(statusAtom, 'BUSY');
@@ -113,6 +127,40 @@ export const insertEventAtom = atom(null, (get, set, command: string) => {
       const newItems = [...items, res!];
       setTotalHours(get, set, newItems);
       set(eventListAtom, eventListManipulator(newItems));
+      set(statusAtom, 'IDLE');
+    } catch (e) {
+      set(errorAtom, e);
+      set(statusAtom, 'IDLE');
+    }
+  };
+  run();
+});
+
+export const updateEventAtom = atom(null, (get, set, { id, command }) => {
+  set(statusAtom, 'BUSY');
+  const items = get(eventListAtom);
+  const { token } = get(userAtom);
+  const calendarId = get(calendarIdAtom);
+  const currentDate = get(currentDateAtom);
+
+  const run = async () => {
+    try {
+      const res = await Service.update(
+        id,
+        command,
+        token,
+        currentDate,
+        calendarId!
+      );
+      const newItems = [...items].map((i) => {
+        if (i.id === id) {
+          return res;
+        }
+        return i;
+      }) as IEvent[];
+      setTotalHours(get, set, newItems);
+      set(eventListAtom, eventListManipulator(newItems));
+      set(selectedEventAtom, null);
       set(statusAtom, 'IDLE');
     } catch (e) {
       set(errorAtom, e);

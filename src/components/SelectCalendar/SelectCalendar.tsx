@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { FC, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import {
+  calendarIdAtom,
   calendarListAtom,
   getCalendarListAtom,
   insertCalendarAtom,
@@ -12,6 +13,7 @@ import {
 const SelectCalendar: FC = () => {
   const [status] = useAtom(statusAtom);
   const [calendarList] = useAtom(calendarListAtom);
+  const [selectedCalendar] = useAtom(calendarIdAtom);
   const [, getCalendarList] = useAtom(getCalendarListAtom);
   const [, setCalendarId] = useAtom(setCalendarIdAtom);
   const [, insertCalendar] = useAtom(insertCalendarAtom);
@@ -32,6 +34,7 @@ const SelectCalendar: FC = () => {
 
   return (
     <div>
+      {!selectedCalendar ? <h4>You have no calendar selected!</h4> : null}
       <h4>Select one calendar:</h4>
       <div>
         {status === 'IDLE'

@@ -1,29 +1,44 @@
 import { FC } from 'react';
-import { getDate } from 'date-fns';
+import { format, getDate } from 'date-fns';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useAtom } from 'jotai';
 import { currentDateAtom } from '../../atoms/app';
 import classes from './EventForm.module.css';
-import { insertEventAtom } from '../../atoms/event';
+import {
+  getCommandAtom,
+  insertEventAtom,
+  selectedEventAtom,
+  updateEventAtom,
+} from '../../atoms/event';
 import { userAtom } from '../../atoms/user';
 import { useLocation } from 'react-router';
 
 const EventForm: FC = () => {
   const [user] = useAtom(userAtom);
+
+  const [selected] = useAtom(selectedEventAtom);
+  const [command] = useAtom(getCommandAtom);
   const [currentDate] = useAtom(currentDateAtom);
-  const [, insertAtom] = useAtom(insertEventAtom);
+  const [, insert] = useAtom(insertEventAtom);
+  const [, update] = useAtom(updateEventAtom);
 
   const location = useLocation();
 
   const handleInsert = (values: any) => {
-    insertAtom(values.command);
+    console.log(command);
+
+    if (command) {
+      update({ id: selected?.id, command: values.command });
+    } else {
+      insert(values.command);
+    }
   };
 
   return user.isAuthenticated && location.pathname === '/' ? (
     <div className={classes.root}>
       <Formik
         initialValues={{
-          command: getDate(currentDate) + ' ',
+          command: command ? command : getDate(currentDate) + ' ',
         }}
         enableReinitialize={true}
         onSubmit={(values, { resetForm }) => {

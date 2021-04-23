@@ -141,6 +141,59 @@ export const insert = async (
   }
 };
 
+export const update = async (
+  id: string,
+  command: string,
+  token: string,
+  currentDate: Date,
+  calendarId: string
+): Promise<IEvent | undefined> => {
+  try {
+    const [d, s, e] = command.split(' ');
+    const start = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      Number.parseInt(d),
+      Number.parseInt(s.substring(0, 2)),
+      Number.parseInt(s.substring(2))
+    );
+    const end = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      Number.parseInt(d),
+      Number.parseInt(e.substring(0, 2)),
+      Number.parseInt(e.substring(2))
+    );
+
+    const res: Response = await fetch(
+      `${API_URL}calendars/${calendarId}/events/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          summary: (differenceInMinutes(end, start) / 60).toFixed(2) + 'h',
+          start: {
+            dateTime: start.toISOString(),
+            timeZone: 'Europe/Warsaw',
+          },
+          end: {
+            dateTime: end.toISOString(),
+            timeZone: 'Europe/Warsaw',
+          },
+        }),
+      }
+    );
+
+    if (res.status === 200) {
+      return res.json();
+    }
+  } catch (e) {
+    new Error(e);
+  }
+};
+
 export const insertCalendar = async (
   token: string
 ): Promise<ICalendar | Error> => {
