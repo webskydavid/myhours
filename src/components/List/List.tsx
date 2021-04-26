@@ -36,7 +36,7 @@ const List: FC = () => {
     if (calendarId === '') {
       history.push('/select');
     }
-  }, []);
+  }, [calendarId, history]);
 
   useEffect(() => {
     getEventList();

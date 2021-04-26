@@ -1,4 +1,4 @@
-import { compareAsc, differenceInMinutes, format, getTime } from 'date-fns';
+import { compareAsc, differenceInMinutes, format } from 'date-fns';
 import { atom } from 'jotai';
 import { IEvent } from '../models/event';
 import { currentDateAtom, netPricePerHAtom, vatAtom } from './app';

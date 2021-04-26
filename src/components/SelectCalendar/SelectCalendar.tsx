@@ -31,7 +31,7 @@ const SelectCalendar: FC = () => {
 
   useEffect(() => {
     getCalendarList();
-  }, []);
+  }, [getCalendarList]);
 
   return (
     <div className={classes.root}>

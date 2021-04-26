@@ -1,6 +1,6 @@
 import { differenceInMinutes, format } from 'date-fns';
 import { useAtom } from 'jotai';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { removeEventAtom, selectedEventAtom } from '../../atoms/event';
 import { IEvent } from '../../models/event';
 import classes from './Event.module.css';
