@@ -45,7 +45,7 @@ const List: FC = () => {
   return (
     <div className={classes.root}>
       <Switcher />
-      {status === 'BUSY' ? 'Loading...' : ''}
+      {/* {status === 'BUSY' ? 'Loading...' : ''} */}
       <>
         <div className={classes.list}>
           {!!items.length

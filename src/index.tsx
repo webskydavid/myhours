@@ -6,6 +6,6 @@ import App from './App';
 const rootElement = document.getElementById('root');
 render(<App />, rootElement);
 
-serviceWorkerRegistration.unregister();
+serviceWorkerRegistration.register();
 
 reportWebVitals();
